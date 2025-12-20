@@ -2,6 +2,8 @@
 /prboom2/release
 /build*
 /release*
+/romfs/*
+!/romfs/dsda-doom.wad
 
 # spec files
 analysis.txt

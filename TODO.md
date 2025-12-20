@@ -1,5 +1,7 @@
 # Subsystems to port (in order ig)
-- [ ] WAD loader
+- [ ] WAD loader - started 19/12/2025 (dd/mm/aa).
+    >My assumption is that audio is implemented with SDL_mixer and that it will work OOTB. After loading the WAD, it goes to the game. End result should be: black screen, no controls but audio should work (which means WADs get loaded correctly)
+
 - [ ] HW Renderer
 - [ ] Input
 

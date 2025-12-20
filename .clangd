@@ -1,0 +1,21 @@
+CompileFlags:
+  Add: [
+    -I/opt/devkitpro/libctru/include,
+    -I/opt/devkitpro/portlibs/3ds/include,
+
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/SDL,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/MUSIC,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/hexen,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/heretic,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda,
+    -DHAVE_CONFIG_H,
+  ]
+  BuiltinHeaders: QueryDriver
+  Compiler: /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+Index:
+  Background: Build
+  StandardLibrary: true
+
+Completion:
+    HeaderInsertion: Never
