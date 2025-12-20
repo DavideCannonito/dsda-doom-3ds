@@ -35,7 +35,7 @@ include $(DEVKITARM)/3ds_rules
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source
+SOURCES		:=	source source/dsda source/heretic source/hexen source/MUSIC source/SDL
 # TODO: EMBED DATA. IN ROMFS?
 #DATA		:=	data
 INCLUDES	:=	$(SOURCES)/include

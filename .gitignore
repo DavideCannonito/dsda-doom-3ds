@@ -4,6 +4,9 @@
 /release*
 /romfs/*
 !/romfs/dsda-doom.wad
+/dsda-doom-3ds.smdh
+/dsda-doom-3ds.elf
+/dsda-doom-3ds.3dsx
 
 # SDL2 libraries to build
 /extern/sdl2-sources/SDL2/*
