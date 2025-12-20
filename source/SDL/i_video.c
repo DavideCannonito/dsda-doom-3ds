@@ -32,8 +32,8 @@
  *-----------------------------------------------------------------------------
  */
 
-#include <SDL_render.h>
-#include <SDL_video.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -51,7 +51,7 @@
 #include <unistd.h>
 #endif
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 //e6y
 #ifdef _WIN32
 #include <SDL_syswm.h>

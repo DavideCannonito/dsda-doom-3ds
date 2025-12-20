@@ -2044,7 +2044,7 @@ static void AM_drawPlayers(void)
   mpoint_t pt;
   fixed_t scale;
 
-#if defined(HAVE_LIBSDL_IMAGE)
+#if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
@@ -2377,7 +2377,7 @@ static void AM_drawThings(void)
   mline_t* lineguy = thintriangle_guy;
   int lineguylines = NUMTHINTRIANGLEGUYLINES;
 
-#if defined(HAVE_LIBSDL_IMAGE)
+#if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
@@ -2646,7 +2646,7 @@ static void AM_drawMarks(void)
   if (map_trail_mode && dsda_RevealAutomap())
     AM_drawPlayerTrail();
 
-#if defined(HAVE_LIBSDL_IMAGE)
+#if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
   {
     if (map_things_appearance == map_things_appearance_icon)
@@ -2910,7 +2910,7 @@ void AM_Drawer (dboolean minimap)
     gld_DrawMapLines();
     M_ArrayClear(&map_lines);
 
-#if defined(HAVE_LIBSDL_IMAGE)
+#if defined(HAVE_LIBSDL2_IMAGE)
     if (map_things_appearance == map_things_appearance_icon)
     {
       gld_DrawNiceThings(f_x, f_y, f_w, f_h);

@@ -48,7 +48,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

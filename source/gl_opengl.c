@@ -38,7 +38,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "gl_opengl.h"
 
 #include "doomtype.h"

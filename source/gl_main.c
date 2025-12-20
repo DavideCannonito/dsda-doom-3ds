@@ -41,7 +41,7 @@
 
 #include "z_zone.h"
 #include <math.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "doomtype.h"
 #include "w_wad.h"
 #include "d_event.h"
@@ -227,7 +227,7 @@ void gld_Init(int width, int height)
   gld_FlushTextures(); // TODO: should this be here?
   M_ChangeSkyMode();
 
-#ifdef HAVE_LIBSDL_IMAGE
+#ifdef HAVE_LIBSDL2_IMAGE
   gld_InitMapPics();
 #endif
 

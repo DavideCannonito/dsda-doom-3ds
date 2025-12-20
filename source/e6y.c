@@ -44,7 +44,7 @@
 #include <direct.h>
 #include <winreg.h>
 #endif
-#include <SDL_opengl.h>
+#include <SDL2/SDL_opengl.h>
 #include <string.h>
 #include <math.h>
 
@@ -52,7 +52,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #ifdef _WIN32
 #include <SDL_syswm.h>
 #endif
