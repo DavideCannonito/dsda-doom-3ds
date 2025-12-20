@@ -26,7 +26,7 @@
 #ifndef __SCANNER_H__
 #define __SCANNER_H__
 
-#include <cstdlib>
+#include <stdlib.h>
 
 enum
 {

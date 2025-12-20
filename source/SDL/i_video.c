@@ -978,9 +978,9 @@ static video_mode_t I_GetModeFromString(const char *modestr)
 {
   video_mode_t mode;
 
-  if (!stricmp(modestr,"gl")) {
+  if (!strcasecmp(modestr,"gl")) {
     mode = VID_MODEGL;
-  } else if (!stricmp(modestr,"OpenGL")) {
+  } else if (!strcasecmp(modestr,"OpenGL")) {
     mode = VID_MODEGL;
   } else {
     mode = VID_MODESW;

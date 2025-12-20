@@ -202,7 +202,7 @@ int dsda_ColorNameToIndex(const char* name) {
     return CR_DEFAULT;
 
   for (i = CR_DEFAULT + 1; i < CR_HUD_LIMIT; ++i)
-    if (!stricmp(color_name_to_index[i], name))
+    if (!strcasecmp(color_name_to_index[i], name))
       return i;
 
   return CR_DEFAULT;

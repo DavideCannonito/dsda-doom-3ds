@@ -1201,7 +1201,7 @@ static dboolean FileMatchesIWAD(const char *name)
     iwad_length = strlen(standard_iwads[i]);
     if (
       name_length >= iwad_length &&
-      !stricmp(name + name_length - iwad_length, standard_iwads[i])
+      !strcasecmp(name + name_length - iwad_length, standard_iwads[i])
     )
       return true;
   }
@@ -1258,7 +1258,7 @@ static void DoLooseFiles(void)
     for (k = 0; looses[k].ext; ++k)
     {
       extlen = strlen(looses[k].ext);
-      if (arglen >= extlen && !stricmp(&dsda_argv[i][arglen - extlen], looses[k].ext))
+      if (arglen >= extlen && !strcasecmp(&dsda_argv[i][arglen - extlen], looses[k].ext))
       {
         // If a wad is an iwad, we don't want to send it to -file
         if (k == loose_wad_index && FileMatchesIWAD(dsda_argv[i]))

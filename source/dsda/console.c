@@ -2548,7 +2548,7 @@ static dboolean dsda_ExecuteConsole(const char* command_line, dboolean noise) {
     if (scan_count == 1) args[0] = '\0';
 
     for (entry = console_commands; entry->command; entry++) {
-      if (!stricmp(command, entry->command_name)) {
+      if (!strcasecmp(command, entry->command_name)) {
         if (dsda_AuthorizeCommand(entry)) {
           if (entry->command(command, args)) {
             dsda_AddConsoleMessage("command executed");

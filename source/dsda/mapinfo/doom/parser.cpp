@@ -521,7 +521,7 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
       old_map.level_num = 0;
 
   for (auto &old_map : doom_mapinfo_maps)
-    if (!stricmp(old_map.lump_name, map.lump_name)) {
+    if (!strcasecmp(old_map.lump_name, map.lump_name)) {
       dsda_ResetMap(old_map);
       old_map = map;
 
@@ -661,7 +661,7 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
   }
 
   for (auto &old_skill : doom_mapinfo_skills)
-    if (!stricmp(old_skill.unique_id, skill.unique_id)) {
+    if (!strcasecmp(old_skill.unique_id, skill.unique_id)) {
       dsda_FreeSkill(old_skill);
       old_skill = skill;
 

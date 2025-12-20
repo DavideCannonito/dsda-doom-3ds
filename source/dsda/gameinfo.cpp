@@ -36,7 +36,7 @@ void dsda_ParseGameInfoLine(Scanner &scanner) {
     return;
   }
 
-  if (!stricmp(scanner.string, "IWAD")) {
+  if (!strcasecmp(scanner.string, "IWAD")) {
     scanner.MustGetToken('=');
     scanner.MustGetString();
 

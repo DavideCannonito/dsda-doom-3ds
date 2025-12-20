@@ -32,10 +32,9 @@
  *  suffers state changes of more or less violent nature.
  *
  *-----------------------------------------------------------------------------*/
-
+ 
 #ifndef __D_THINK__
 #define __D_THINK__
-
 /*
  * Experimental stuff.
  * To compile this as "ANSI C with classes"
@@ -53,15 +52,15 @@ typedef  void (*actionf_p2)( void*, void* );
 /* Note: In d_deh.c you will find references to these
  * wherever code pointers and function handlers exist
  */
-/*
-typedef union
+
+/*typedef union
 {
   actionf_p1    acp1;
   actionf_v     acv;
   actionf_p2    acp2;
 
-} actionf_t;
-*/
+} actionf_t;*/
+
 
 /* Historically, "think_t" is yet another
  *  function pointer to a routine to handle

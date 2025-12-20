@@ -152,12 +152,12 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	char *pname = Z_Strdup(scanner.string);
 	scanner.MustGetToken('=');
 
-	if (!stricmp(pname, "levelname"))
+	if (!strcasecmp(pname, "levelname"))
 	{
 		scanner.MustGetToken(TK_StringConst);
 		ReplaceString(&mape->levelname, scanner.string);
 	}
-	else if (!stricmp(pname, "label"))
+	else if (!strcasecmp(pname, "label"))
 	{
 		if (scanner.CheckToken(TK_Identifier))
 		{
@@ -174,12 +174,12 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	                ReplaceString(&mape->label, scanner.string);
 	        }
 	}
-	else if (!stricmp(pname, "author"))
+	else if (!strcasecmp(pname, "author"))
 	{
 		scanner.MustGetToken(TK_StringConst);
 		ReplaceString(&mape->author, scanner.string);
 	}
-	else if (!stricmp(pname, "next"))
+	else if (!strcasecmp(pname, "next"))
 	{
 		ParseLumpName(scanner, mape->nextmap);
 		if (!G_ValidateMapName(mape->nextmap, NULL, NULL))
@@ -188,7 +188,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			return 0;
 		}
 	}
-	else if (!stricmp(pname, "nextsecret"))
+	else if (!strcasecmp(pname, "nextsecret"))
 	{
 		ParseLumpName(scanner, mape->nextsecret);
 		if (!G_ValidateMapName(mape->nextsecret, NULL, NULL))
@@ -197,81 +197,81 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			return 0;
 		}
 	}
-	else if (!stricmp(pname, "levelpic"))
+	else if (!strcasecmp(pname, "levelpic"))
 	{
 		ParseLumpName(scanner, mape->levelpic);
 	}
-	else if (!stricmp(pname, "skytexture"))
+	else if (!strcasecmp(pname, "skytexture"))
 	{
 		ParseLumpName(scanner, mape->skytexture);
 	}
-	else if (!stricmp(pname, "music"))
+	else if (!strcasecmp(pname, "music"))
 	{
 		ParseLumpName(scanner, mape->music);
 	}
-	else if (!stricmp(pname, "endpic"))
+	else if (!strcasecmp(pname, "endpic"))
 	{
 		ParseLumpName(scanner, mape->endpic);
 	}
-	else if (!stricmp(pname, "endcast"))
+	else if (!strcasecmp(pname, "endcast"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		if (scanner.boolean) strcpy(mape->endpic, "$CAST");
 		else strcpy(mape->endpic, "-");
 	}
-	else if (!stricmp(pname, "endbunny"))
+	else if (!strcasecmp(pname, "endbunny"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		if (scanner.boolean) strcpy(mape->endpic, "$BUNNY");
 		else strcpy(mape->endpic, "-");
 	}
-	else if (!stricmp(pname, "endgame"))
+	else if (!strcasecmp(pname, "endgame"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		if (scanner.boolean) strcpy(mape->endpic, "!");
 		else strcpy(mape->endpic, "-");
 	}
-	else if (!stricmp(pname, "exitpic"))
+	else if (!strcasecmp(pname, "exitpic"))
 	{
 		ParseLumpName(scanner, mape->exitpic);
 	}
-	else if (!stricmp(pname, "enterpic"))
+	else if (!strcasecmp(pname, "enterpic"))
 	{
 		ParseLumpName(scanner, mape->enterpic);
 	}
-	else if (!stricmp(pname, "nointermission"))
+	else if (!strcasecmp(pname, "nointermission"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->nointermission = scanner.boolean;
 	}
-	else if (!stricmp(pname, "partime"))
+	else if (!strcasecmp(pname, "partime"))
 	{
 		scanner.MustGetInteger();
 		mape->partime = TICRATE * scanner.number;
 	}
-	else if (!stricmp(pname, "intertext"))
+	else if (!strcasecmp(pname, "intertext"))
 	{
 		char *lname = ParseMultiString(scanner, 1);
 		if (!lname) return 0;
 		if (mape->intertext != NULL) Z_Free(mape->intertext);
 		mape->intertext = lname;
 	}
-	else if (!stricmp(pname, "intertextsecret"))
+	else if (!strcasecmp(pname, "intertextsecret"))
 	{
 		char *lname = ParseMultiString(scanner, 1);
 		if (!lname) return 0;
 		if (mape->intertextsecret != NULL) Z_Free(mape->intertextsecret);
 		mape->intertextsecret = lname;
 	}
-	else if (!stricmp(pname, "interbackdrop"))
+	else if (!strcasecmp(pname, "interbackdrop"))
 	{
 		ParseLumpName(scanner, mape->interbackdrop);
 	}
-	else if (!stricmp(pname, "intermusic"))
+	else if (!strcasecmp(pname, "intermusic"))
 	{
 		ParseLumpName(scanner, mape->intermusic);
 	}
-	else if (!stricmp(pname, "episode"))
+	else if (!strcasecmp(pname, "episode"))
 	{
 		if (scanner.CheckToken(TK_Identifier))
 		{
@@ -305,7 +305,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			if (alttext) Z_Free(alttext);
 		}
 	}
-	else if (!stricmp(pname, "bossaction"))
+	else if (!strcasecmp(pname, "bossaction"))
 	{
 		scanner.MustGetToken(TK_Identifier);
 		int special, tag;
@@ -415,12 +415,12 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 		// Set default level progression here to simplify the checks elsewhere. Doing this lets us skip all normal code for this if nothing has been defined.
 		if (!parsed.nextmap[0] && !parsed.endpic[0])
 		{
-			if (!stricmp(parsed.mapname, "MAP30")) strcpy(parsed.endpic, "$CAST");
-			else if (!stricmp(parsed.mapname, "E1M8"))  strcpy(parsed.endpic, gamemode == retail? "CREDIT" : "HELP2");
-			else if (!stricmp(parsed.mapname, "E2M8"))  strcpy(parsed.endpic, "VICTORY2");
-			else if (!stricmp(parsed.mapname, "E3M8"))  strcpy(parsed.endpic, "$BUNNY");
-			else if (!stricmp(parsed.mapname, "E4M8"))  strcpy(parsed.endpic, "ENDPIC");
-			else if (gamemission == tc_chex && !stricmp(parsed.mapname, "E1M5"))  strcpy(parsed.endpic, "CREDIT");
+			if (!strcasecmp(parsed.mapname, "MAP30")) strcpy(parsed.endpic, "$CAST");
+			else if (!strcasecmp(parsed.mapname, "E1M8"))  strcpy(parsed.endpic, gamemode == retail? "CREDIT" : "HELP2");
+			else if (!strcasecmp(parsed.mapname, "E2M8"))  strcpy(parsed.endpic, "VICTORY2");
+			else if (!strcasecmp(parsed.mapname, "E3M8"))  strcpy(parsed.endpic, "$BUNNY");
+			else if (!strcasecmp(parsed.mapname, "E4M8"))  strcpy(parsed.endpic, "ENDPIC");
+			else if (gamemission == tc_chex && !strcasecmp(parsed.mapname, "E1M5"))  strcpy(parsed.endpic, "CREDIT");
 			else
 			{
 				int ep, map;

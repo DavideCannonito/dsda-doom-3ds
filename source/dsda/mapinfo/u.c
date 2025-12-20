@@ -49,7 +49,7 @@ static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
   snprintf(lumpname, sizeof(lumpname), "%s", VANILLA_MAP_LUMP_NAME(gameepisode, gamemap));
 
   for (i = 0; i < Maps.mapcount; i++)
-    if (!stricmp(lumpname, Maps.maps[i].mapname))
+    if (!strcasecmp(lumpname, Maps.maps[i].mapname))
       return &Maps.maps[i];
 
   return NULL;
@@ -104,14 +104,14 @@ int dsda_UPrevMap(int* episode, int* map) {
   for (i = 0; i < Maps.mapcount; ++i)
     if (
       Maps.maps[i].nextsecret[0] &&
-      !stricmp(Maps.maps[i].nextsecret, gamemapinfo->mapname)
+      !strcasecmp(Maps.maps[i].nextsecret, gamemapinfo->mapname)
     )
       return dsda_NameToMap(Maps.maps[i].mapname, episode, map);
 
   for (i = 0; i < Maps.mapcount; ++i)
     if (
       Maps.maps[i].nextmap[0] &&
-      !stricmp(Maps.maps[i].nextmap, gamemapinfo->mapname)
+      !strcasecmp(Maps.maps[i].nextmap, gamemapinfo->mapname)
     )
       return dsda_NameToMap(Maps.maps[i].mapname, episode, map);
 
@@ -284,7 +284,7 @@ int dsda_UFTicker(void) {
 
   if (next_level) {
     if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0)) {
-      if (!stricmp(gamemapinfo->endpic, "$CAST")) {
+      if (!strcasecmp(gamemapinfo->endpic, "$CAST")) {
         F_StartCast(NULL, NULL, true);
         return false; // let go of finale ownership
       }
@@ -292,9 +292,9 @@ int dsda_UFTicker(void) {
         finalecount = 0;
         finalestage = 1;
         wipegamestate = -1; // force a wipe
-        if (!stricmp(gamemapinfo->endpic, "$BUNNY"))
+        if (!strcasecmp(gamemapinfo->endpic, "$BUNNY"))
           F_StartScroll(NULL, NULL, NULL, true);
-        else if (!stricmp(gamemapinfo->endpic, "!"))
+        else if (!strcasecmp(gamemapinfo->endpic, "!"))
           return false; // let go of finale ownership
       }
     }

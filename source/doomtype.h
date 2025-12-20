@@ -59,7 +59,7 @@ typedef unsigned char byte;
 #include <limits.h>
 
 #ifdef _MSC_VER
-#define strcasecmp _stricmp
+#define strcasecmp _strcasecmp
 #define strncasecmp _strnicmp
 #endif
 
