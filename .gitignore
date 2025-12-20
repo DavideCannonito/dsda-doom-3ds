@@ -5,6 +5,20 @@
 /romfs/*
 !/romfs/dsda-doom.wad
 
+# SDL2 libraries to build
+/extern/sdl2-sources/SDL2/*
+/extern/sdl2-sources/SDL2_gfx/*
+/extern/sdl2-sources/SDL2_image/*
+/extern/sdl2-sources/SDL2_mixer/*
+/extern/sdl2-sources/SDL2_ttf/*
+
+!/extern/sdl2-sources/SDL2/PKGBUILD
+!/extern/sdl2-sources/SDL2/3ds-initial-accelerated-renderer_2024-10-12.patch
+!/extern/sdl2-sources/SDL2_gfx/PKGBUILD
+!/extern/sdl2-sources/SDL2_image/PKGBUILD
+!/extern/sdl2-sources/SDL2_mixer/PKGBUILD
+!/extern/sdl2-sources/SDL2_ttf/PKGBUILD
+
 # spec files
 analysis.txt
 levelstat.txt
