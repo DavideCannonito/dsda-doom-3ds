@@ -10,6 +10,7 @@ CompileFlags:
     -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/heretic,
     -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda,
     -DHAVE_CONFIG_H,
+    -std=c99,
   ]
   BuiltinHeaders: QueryDriver
   Compiler: /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc

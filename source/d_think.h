@@ -42,6 +42,15 @@
  *  action functions cleanly.
  */
 // killough 11/98: convert back to C instead of C++
+
+/* gcc gives the following error for every state:
+  "code": "-Wincompatible-function-pointer-types",
+  "message": "Incompatible function pointer types initializing 'actionf_t' (aka 'void (*)(void)') with an expression of type 'void (struct player_s *, pspdef_t *)'",
+  (from vscode-clangd) 
+  typedef  void (*actionf_t)();
+
+  EDIT: THIS IS FIXED WHEN COMPILING WITH -std=c99
+*/
 typedef  void (*actionf_t)();
 
 //e6y: for boom's friction code

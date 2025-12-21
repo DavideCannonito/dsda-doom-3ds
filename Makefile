@@ -53,7 +53,7 @@ CFLAGS	:=	-g -Wall -O2 \
 			-ffunction-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H
+CFLAGS	+=	$(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -std=c99
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
