@@ -21,10 +21,11 @@
 #define HAVE_LIBSDL2_IMAGE
 #define HAVE_LIBMAD
 #define HAVE_LIBXMP
-#define HAVE_LIBVORBISFILE
+// TEMPORARILY DISABLE LIBVORBISFILE. There is a function that isn't present in portlibs.
+#undef HAVE_LIBVORBISFILE
 
-// want all the checks
-#define RANGECHECK
+// want all the checks - TEMPORARILY DISABLED. FIXME: NEED TO HUNT DOWN AN UNDEFINED "VIDEO" VARIABLE (r_drawflush.inl)
+#undef RANGECHECK
 
 // if needed, will find a replacement. mmap() doesn't exist for 3DS. Might need to create a wrapper that uses svcControlMemory()?
 #undef HAVE_MMAP
@@ -32,8 +33,8 @@
 #undef HAVE_CREATE_FILE_MAPPING
 // can't find it in 3ds-portlibs group
 #undef HAVE_SNDFILE_MPEG
-// want all the checks
-#undef SIMPLECHECKS
+// want all the checks - TEMPORARILY DISABLED. FIXME: NEED TO HUNT DOWN AN UNDEFINED "VIDEO" VARIABLE (r_drawflush.inl)
+#define SIMPLECHECKS
 // can't find it in 3ds-portlibs group
 #undef HAVE_LIBPORTMIDI
 // 3DS' ARM processor is in little endian... i think
@@ -46,3 +47,5 @@
 #undef HAVE_LIBSNDFILE
 // personally added - not sure this port will ever need libzip, and there is no ported version of libzip
 #undef HAVE_LIBZIP
+// personally added - just to stub OpenGL/HW rendering stuff
+#undef HAVE_GRAPHICS

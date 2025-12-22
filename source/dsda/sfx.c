@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
+#include <strings.h>
 #include "doomtype.h"
 
 #include "dsda/configuration.h"
@@ -82,7 +82,7 @@ int dsda_GetDehSFXIndex(const char* key, size_t length) {
     if (
       S_sfx[i].name &&
       strlen(S_sfx[i].name + 2) == length &&
-      !strnicmp(S_sfx[i].name + 2, key, length) &&
+      !strncasecmp(S_sfx[i].name + 2, key, length) &&
       !sfx_state[i]
     ) {
       sfx_state[i] = true; // sfx has been edited

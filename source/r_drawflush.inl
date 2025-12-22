@@ -46,7 +46,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
    // Scaled software fuzz algorithm
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
 {
-    int yl, yh, count, lines;
+    int yl, yh, count, lines,x;
     byte *dest;
 
     if ((temp_x + startx) % fuzzcellsize)

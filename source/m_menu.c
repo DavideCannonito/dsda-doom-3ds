@@ -94,7 +94,7 @@
 #include "dsda/save.h"
 #include "dsda/skill_info.h"
 #include "dsda/skip.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/console.h"
 #include "dsda/stretch.h"
 #include "dsda/text_color.h"

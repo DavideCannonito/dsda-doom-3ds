@@ -16,7 +16,7 @@
 //
 
 #include "string.h"
-
+#include <strings.h>
 #include "dsda/mobjinfo.h"
 
 #include "name.h"

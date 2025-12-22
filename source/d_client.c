@@ -62,7 +62,7 @@
 
 #include "dsda/args.h"
 #include "dsda/settings.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 
 ticcmd_t local_cmds[MAX_MAXPLAYERS][BACKUPTICS];
 int maketic;

@@ -38,7 +38,7 @@ BUILD		:=	build
 SOURCES		:=	source source/dsda source/heretic source/hexen source/MUSIC source/SDL
 # TODO: EMBED DATA. IN ROMFS?
 #DATA		:=	data
-INCLUDES	:=	$(SOURCES)/include
+INCLUDES	:=	$(SOURCES)
 GRAPHICS	:=	gfx
 #GFXBUILD	:=	$(BUILD)
 ROMFS		:=	romfs
@@ -53,7 +53,7 @@ CFLAGS	:=	-g -Wall -O2 \
 			-ffunction-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -std=c99
+CFLAGS	+=	$(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99 
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 

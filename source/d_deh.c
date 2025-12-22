@@ -1744,7 +1744,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
     // killough 10/98: INCLUDE code rewritten to allow arbitrary nesting,
     // and to greatly simplify code, fix memory leaks, other bugs
 
-    if (!strnicmp(inbuffer, "INCLUDE", 7)) // include a file
+    if (!strncasecmp(inbuffer, "INCLUDE", 7)) // include a file
     {
       // preserve state while including a file
       // killough 10/98: moved to here
@@ -1764,7 +1764,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
       // check for no-text directive, used when including a DEH
       // file but using the BEX format to handle strings
 
-      if (!strnicmp(nextfile = ptr_lstrip(inbuffer + 7), "NOTEXT", 6))
+      if (!strncasecmp(nextfile = ptr_lstrip(inbuffer + 7), "NOTEXT", 6))
         includenotext = true, nextfile = ptr_lstrip(nextfile + 6);
 
       deh_log("Branching to include file %s...\n", nextfile);

@@ -22,7 +22,7 @@
 #include "dsda/mapinfo/doom/parser.h"
 #include "dsda/text_color.h"
 #include "dsda/utility.h"
-
+#include <strings.h>
 #include "skill_info.h"
 
 skill_info_t skill_info;

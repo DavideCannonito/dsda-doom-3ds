@@ -60,7 +60,7 @@ typedef unsigned char byte;
 
 #ifdef _MSC_VER
 #define strcasecmp _strcasecmp
-#define strncasecmp _strnicmp
+#define strncasecmp _strncasecmp
 #endif
 
 #ifndef PATH_MAX

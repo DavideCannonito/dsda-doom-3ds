@@ -111,7 +111,7 @@
 #include "dsda/playback.h"
 #include "dsda/skill_info.h"
 #include "dsda/skip.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/tracker.h"
 #include "dsda/split_tracker.h"
 #include "dsda/utility.h"

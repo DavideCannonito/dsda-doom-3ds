@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
+#include <strings.h>
 #include "info.h"
 
 #include "sprite.h"
@@ -62,7 +62,7 @@ int dsda_GetDehSpriteIndex(const char* key) {
   int i;
 
   for (i = 0; i < num_sprites; ++i)
-    if (sprnames[i] && !strnicmp(sprnames[i], key, 4) && !sprnames_state[i]) {
+    if (sprnames[i] && !strncasecmp(sprnames[i], key, 4) && !sprnames_state[i]) {
       sprnames_state[i] = true; // sprite has been edited
       return i;
     }

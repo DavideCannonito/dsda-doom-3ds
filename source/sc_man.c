@@ -19,6 +19,7 @@
 #include "m_misc.h"
 #include "z_zone.h"
 #include "lprintf.h"
+#include <strings.h>
 
 #include "sc_man.h"
 

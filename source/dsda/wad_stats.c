@@ -16,7 +16,7 @@
 //
 
 #include <stdio.h>
-
+#include <strings.h>
 #include "doomstat.h"
 #include "lprintf.h"
 #include "m_file.h"

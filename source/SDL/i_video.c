@@ -92,7 +92,7 @@
 #include "dsda/pause.h"
 #include "dsda/settings.h"
 #include "dsda/skip.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/gl/render_scale.h"
 
 //e6y: new mouse code
