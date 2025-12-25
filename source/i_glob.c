@@ -20,7 +20,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-
+#include <strings.h>
 #include "doomtype.h"
 #include "i_glob.h"
 #include "z_zone.h"

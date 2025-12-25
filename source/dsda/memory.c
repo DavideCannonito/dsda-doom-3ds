@@ -20,7 +20,7 @@
 #include "w_wad.h"
 #include "lprintf.h"
 
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 
 #include "memory.h"
 

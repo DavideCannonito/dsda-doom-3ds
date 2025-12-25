@@ -22,7 +22,7 @@
 #include "dsda/mapinfo/doom/parser.h"
 #include "dsda/text_color.h"
 #include "dsda/utility.h"
-
+#include <strings.h>
 #include "skill_info.h"
 
 skill_info_t skill_info;
@@ -191,27 +191,27 @@ void dsda_InitSkills(void) {
   }
 
   for (j = 0; j < doom_mapinfo.num_skills; ++j) {
-    if (!stricmp(doom_mapinfo.skills[j].unique_id, "baby")) {
+    if (!strcasecmp(doom_mapinfo.skills[j].unique_id, "baby")) {
       dsda_CopySkillInfo(0, &doom_mapinfo.skills[j]);
       --i;
       --num_skills;
     }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "easy")) {
+    else if (!strcasecmp(doom_mapinfo.skills[j].unique_id, "easy")) {
       dsda_CopySkillInfo(1, &doom_mapinfo.skills[j]);
       --i;
       --num_skills;
     }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "normal")) {
+    else if (!strcasecmp(doom_mapinfo.skills[j].unique_id, "normal")) {
       dsda_CopySkillInfo(2, &doom_mapinfo.skills[j]);
       --i;
       --num_skills;
     }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "hard")) {
+    else if (!strcasecmp(doom_mapinfo.skills[j].unique_id, "hard")) {
       dsda_CopySkillInfo(3, &doom_mapinfo.skills[j]);
       --i;
       --num_skills;
     }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "nightmare")) {
+    else if (!strcasecmp(doom_mapinfo.skills[j].unique_id, "nightmare")) {
       dsda_CopySkillInfo(4, &doom_mapinfo.skills[j]);
       --i;
       --num_skills;

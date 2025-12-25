@@ -59,8 +59,8 @@ typedef unsigned char byte;
 #include <limits.h>
 
 #ifdef _MSC_VER
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
+#define strcasecmp _strcasecmp
+#define strncasecmp _strncasecmp
 #endif
 
 #ifndef PATH_MAX

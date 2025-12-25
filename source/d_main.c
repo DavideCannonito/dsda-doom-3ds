@@ -39,7 +39,7 @@
 #include "config.h"
 #endif
 
-#include "SDL_timer.h"
+#include <SDL2/SDL_timer.h>
 
 #ifdef _MSC_VER
 #include <io.h>
@@ -105,7 +105,7 @@
 #include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/utility.h"
 #include "dsda/wad_stats.h"
 #include "dsda/zipfile.h"
@@ -898,7 +898,7 @@ void D_AddFile (const char *file, wad_source_t source)
 
   // No Rest For The Living
   len=strlen(wadfiles[numwadfiles].name);
-  if (len>=9 && !strnicmp(wadfiles[numwadfiles].name+len-9,"nerve.wad",9))
+  if (len>=9 && !strncasecmp(wadfiles[numwadfiles].name+len-9,"nerve.wad",9))
     gamemission = pack_nerve;
 
   numwadfiles++;
@@ -1061,13 +1061,13 @@ void AddIWAD(const char *iwad)
   */
   i = strlen(iwad);
 
-  if (i >= 11 && !strnicmp(iwad + i - 11, "heretic.wad", 11))
+  if (i >= 11 && !strncasecmp(iwad + i - 11, "heretic.wad", 11))
   {
     if (!dsda_Flag(dsda_arg_heretic))
       dsda_UpdateFlag(dsda_arg_heretic, true);
   }
 
-  if (i >= 9 && !strnicmp(iwad + i - 9, "hexen.wad", 9))
+  if (i >= 9 && !strncasecmp(iwad + i - 9, "hexen.wad", 9))
   {
     if (!dsda_Flag(dsda_arg_hexen))
       dsda_UpdateFlag(dsda_arg_hexen, true);
@@ -1076,7 +1076,7 @@ void AddIWAD(const char *iwad)
     haswolflevels = false;
   }
 
-  if (i >= 12 && !strnicmp(iwad + i - 12, "heretic1.wad", 12))
+  if (i >= 12 && !strncasecmp(iwad + i - 12, "heretic1.wad", 12))
   {
     if (!dsda_Flag(dsda_arg_heretic))
       dsda_UpdateFlag(dsda_arg_heretic, true);
@@ -1090,29 +1090,29 @@ void AddIWAD(const char *iwad)
     case registered:
     case shareware:
       gamemission = doom;
-      if (i>=8 && !strnicmp(iwad+i-8,"chex.wad",8))
+      if (i>=8 && !strncasecmp(iwad+i-8,"chex.wad",8))
         gamemission = tc_chex;
-      else if (i>=10 && !strnicmp(iwad+i-10,"chex3v.wad",10))
+      else if (i>=10 && !strncasecmp(iwad+i-10,"chex3v.wad",10))
         gamemission = tc_chex3v;
-      else if (i>=11 && !strnicmp(iwad+i-11,"rekkrsa.wad",11))
+      else if (i>=11 && !strncasecmp(iwad+i-11,"rekkrsa.wad",11))
         gamemission = tc_rekkr;
-      else if (i>=13 && !strnicmp(iwad+i-13,"freedoom1.wad",13))
+      else if (i>=13 && !strncasecmp(iwad+i-13,"freedoom1.wad",13))
         gamemission = tc_freedoom;
       break;
     case commercial:
       gamemission = doom2;
-      if (i>=10 && !strnicmp(iwad+i-10,"doom2f.wad",10))
+      if (i>=10 && !strncasecmp(iwad+i-10,"doom2f.wad",10))
         language=french;
-      else if (i>=7 && !strnicmp(iwad+i-7,"tnt.wad",7))
+      else if (i>=7 && !strncasecmp(iwad+i-7,"tnt.wad",7))
         gamemission = pack_tnt;
-      else if (i>=12 && !strnicmp(iwad+i-12,"plutonia.wad",12))
+      else if (i>=12 && !strncasecmp(iwad+i-12,"plutonia.wad",12))
         gamemission = pack_plut;
-      else if (i>=11 && !strnicmp(iwad+i-11,"chex3d2.wad",11))
+      else if (i>=11 && !strncasecmp(iwad+i-11,"chex3d2.wad",11))
         gamemission = tc_chex3v;
-      else if (i>=8 && !strnicmp(iwad+i-8,"hacx.wad",8))
+      else if (i>=8 && !strncasecmp(iwad+i-8,"hacx.wad",8))
         gamemission = tc_hacx;
-      else if ((i>=13 && !strnicmp(iwad+i-13,"freedoom2.wad",13))
-            || (i>=10 && !strnicmp(iwad+i-10,"freedm.wad",10)))
+      else if ((i>=13 && !strncasecmp(iwad+i-13,"freedoom2.wad",13))
+            || (i>=10 && !strncasecmp(iwad+i-10,"freedm.wad",10)))
         gamemission = tc_freedoom;
       break;
     default:
@@ -1143,7 +1143,7 @@ static inline dboolean CheckExeSuffix(const char *suffix)
   char *dash;
 
   if ((dash = strrchr(dsda_argv[0], '-')))
-    if (!strnicmp(dash, suffix, strlen(suffix)))
+    if (!strncasecmp(dash, suffix, strlen(suffix)))
       return true;
 
   return false;
@@ -1201,7 +1201,7 @@ static dboolean FileMatchesIWAD(const char *name)
     iwad_length = strlen(standard_iwads[i]);
     if (
       name_length >= iwad_length &&
-      !stricmp(name + name_length - iwad_length, standard_iwads[i])
+      !strcasecmp(name + name_length - iwad_length, standard_iwads[i])
     )
       return true;
   }
@@ -1258,7 +1258,7 @@ static void DoLooseFiles(void)
     for (k = 0; looses[k].ext; ++k)
     {
       extlen = strlen(looses[k].ext);
-      if (arglen >= extlen && !stricmp(&dsda_argv[i][arglen - extlen], looses[k].ext))
+      if (arglen >= extlen && !strcasecmp(&dsda_argv[i][arglen - extlen], looses[k].ext))
       {
         // If a wad is an iwad, we don't want to send it to -file
         if (k == loose_wad_index && FileMatchesIWAD(dsda_argv[i]))

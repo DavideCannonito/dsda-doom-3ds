@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
+#include <strings.h>
 #include "doomtype.h"
 #include "p_saveg.h"
 #include "s_advsound.h"
@@ -55,7 +55,7 @@ int dsda_GetDehMusicIndex(const char* key, size_t length) {
     if (
       S_music[i].name &&
       strlen(S_music[i].name) == length &&
-      !strnicmp(S_music[i].name, key, length) &&
+      !strncasecmp(S_music[i].name, key, length) &&
       !music_state[i]
     ) {
       music_state[i] = true; // music has been edited

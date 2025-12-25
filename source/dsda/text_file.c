@@ -45,7 +45,7 @@ static char* dsda_TextFileName(void) {
   playdemo = Z_Strdup(playback_name);
   name_length = strlen(playdemo);
 
-  if (name_length > 4 && !stricmp(playdemo + name_length - 4, ".lmp")) {
+  if (name_length > 4 && !strcasecmp(playdemo + name_length - 4, ".lmp")) {
     name = Z_Strdup(playdemo);
     name[name_length - 4] = '\0';
   }

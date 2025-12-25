@@ -73,9 +73,8 @@ const music_player_t vorb_player =
 #include <string.h>
 #include "lprintf.h"
 
-#include <vorbis/vorbisfile.h>
-#include <vorbis/codec.h>
-
+#include <tremor/ivorbiscodec.h>
+#include <tremor/ivorbisfile.h>
 #include "i_sound.h"
 
 // uncomment to allow (experiemntal) support for

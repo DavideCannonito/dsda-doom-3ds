@@ -38,6 +38,7 @@
 #include <windows.h>
 #endif
 
+#include "STUBS/i_system_stubs.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -48,7 +49,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -84,7 +85,7 @@
 
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/utility.h"
 
 void I_uSleep(unsigned long usecs)

@@ -180,7 +180,7 @@ static void dsda_ParseSndInfoLine(Scanner &scanner) {
     return;
   }
 
-  if (!stricmp(scanner.string, "$ambient"))
+  if (!strcasecmp(scanner.string, "$ambient"))
     dsda_ParseAmbient(scanner);
   else if (scanner.string[0] == '$') {
     scanner.SkipLine();

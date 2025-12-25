@@ -34,6 +34,7 @@
 #ifndef __P_PSPR__
 #define __P_PSPR__
 
+#include "doomdef.h"
 #include "p_mobj.h"
 
 /* Basic data types.

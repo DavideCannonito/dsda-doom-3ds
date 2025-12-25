@@ -16,7 +16,7 @@
 //
 
 #include "string.h"
-
+#include <strings.h>
 #include "dsda/mobjinfo.h"
 
 #include "name.h"
@@ -569,7 +569,7 @@ int dsda_ActorNameToType(const char* name) {
   int i;
 
   for (i = 0; actor_names[i]; ++i)
-    if (!stricmp(name, actor_names[i]))
+    if (!strcasecmp(name, actor_names[i]))
       return dsda_GetDehMobjIndex(i);
 
   return NAME_NOT_FOUND;
@@ -579,19 +579,19 @@ int dsda_ActionNameToNumber(const char* name) {
   int i;
 
   for (i = 0; action_names[i]; ++i)
-    if (action_names[i][0] && !stricmp(name, action_names[i]))
+    if (action_names[i][0] && !strcasecmp(name, action_names[i]))
       return i;
 
-  if (!stricmp(name, "Map_SetColormap"))
+  if (!strcasecmp(name, "Map_SetColormap"))
     return 2701;
 
-  if (!stricmp(name, "Sector_SetColormap"))
+  if (!strcasecmp(name, "Sector_SetColormap"))
     return 2702;
 
-  if (!stricmp(name, "Music_ChangeSong"))
+  if (!strcasecmp(name, "Music_ChangeSong"))
     return 2703;
 
-  if (!stricmp(name, "Music_Stop"))
+  if (!strcasecmp(name, "Music_Stop"))
     return 2704;
 
   return NAME_NOT_FOUND;

@@ -15,7 +15,7 @@
 //	DSDA Render Stats
 //
 
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/utility.h"
 
 #include "render_stats.h"

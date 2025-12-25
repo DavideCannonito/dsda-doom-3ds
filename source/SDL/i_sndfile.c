@@ -13,8 +13,8 @@
 // DESCRIPTION:
 //      Load sound lumps with libsndfile.
 
-#include "SDL.h"
-#include "sndfile.h"
+#include <SDL2/SDL.h>
+#include "STUBS/i_sndfile_stubs.h"
 
 #include "lprintf.h"
 #include "memio.h"

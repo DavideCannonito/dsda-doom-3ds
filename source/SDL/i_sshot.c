@@ -38,10 +38,10 @@
 
 #include <stdlib.h>
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
-#ifdef HAVE_LIBSDL_IMAGE
-#include <SDL_image.h>
+#ifdef HAVE_LIBSDL2_IMAGE
+#include <SDL2/SDL_image.h>
 #endif
 
 #include "doomstat.h"
@@ -81,7 +81,7 @@ int I_ScreenShot(const char *fname)
 
   if (screenshot)
   {
-#ifdef HAVE_LIBSDL_IMAGE
+#ifdef HAVE_LIBSDL2_IMAGE
     result = IMG_SavePNG(screenshot, fname);
 #else
     result = SDL_SaveBMP(screenshot, fname);

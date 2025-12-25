@@ -45,6 +45,7 @@
 #include <math.h>
 
 #include "gl_opengl.h"
+#include "STUBS/gl_preprocess_stubs.h"
 
 #include "z_zone.h"
 #include "doomstat.h"

@@ -15,7 +15,7 @@
 //	DSDA Game Controller
 //
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 #include "d_event.h"
 #include "d_main.h"

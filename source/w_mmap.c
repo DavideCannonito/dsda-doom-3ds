@@ -30,6 +30,8 @@
  *-----------------------------------------------------------------------------
  */
 
+// hopefully w_memcache.c is the equivalent without mmap.
+#ifdef HAVE_MMAP
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -265,3 +267,4 @@ void *W_GetModifiableLumpData(int lump)
 {
   return lump_data[lump];
 }
+#endif

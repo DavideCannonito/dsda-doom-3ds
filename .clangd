@@ -9,13 +9,32 @@ CompileFlags:
     -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/hexen,
     -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/heretic,
     -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/STUBS,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda/gl,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda/hud_components,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda/mapinfo,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda/doom,
+    -I/home/ArchDev/porting_di_dsda-doom/dsda-doom-3ds/source/dsda/utility,
+
     -DHAVE_CONFIG_H,
+    -D_GNU_SOURCE,
   ]
   BuiltinHeaders: QueryDriver
   Compiler: /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
+
+---
+If:
+  PathMatch: .*\.c$
+CompileFlags:
+  Add: [-std=c99]
+
+---
+If:
+  PathMatch: .*\.(cpp|cc|cxx)$
+
 Index:
   Background: Build
   StandardLibrary: true
 
 Completion:
-    HeaderInsertion: Never
+  HeaderInsertion: Never

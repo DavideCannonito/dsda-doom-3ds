@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
+#include <strings.h>
 #include "p_maputl.h"
 #include "r_main.h"
 #include "z_zone.h"
@@ -332,7 +332,8 @@ fixed_t dsda_FloatToFixed(float x)
   return (fixed_t) (x * FRACUNIT);
 }
 
-static int pow10[8] = {
+// renamed from pow10 because of clash in <math.h>
+static int powers_of_10[8] = {
   10,
   100,
   1000,
@@ -361,7 +362,7 @@ fixed_t dsda_StringToFixed(const char* x)
   result <<= FRACBITS;
 
   if (frac[0])
-    result += (fixed_t) ((int64_t) atoi(frac) * FRACUNIT / pow10[strlen(frac) - 1]);
+    result += (fixed_t) ((int64_t) atoi(frac) * FRACUNIT / powers_of_10[strlen(frac) - 1]);
 
   return negative ? -result : result;
 }

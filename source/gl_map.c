@@ -33,9 +33,9 @@
 
 #include <math.h>
 
-#include "SDL.h"
-#ifdef HAVE_LIBSDL_IMAGE
-#include "SDL_image.h"
+#include <SDL2/SDL.h>
+#ifdef HAVE_LIBSDL2_IMAGE
+#include <SDL2/SDL_image.h>
 #endif
 
 #include "gl_opengl.h"
@@ -87,7 +87,7 @@ void gld_InitMapPics(void)
     if (lump != LUMP_NOT_FOUND)
     {
       SDL_Surface *surf = NULL;
-#ifdef HAVE_LIBSDL_IMAGE
+#ifdef HAVE_LIBSDL2_IMAGE
       SDL_Surface *surf_raw;
 
       surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), true);

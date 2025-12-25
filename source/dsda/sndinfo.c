@@ -21,7 +21,7 @@
 #include "s_sound.h"
 #include "sc_man.h"
 #include "sounds.h"
-
+#include <strings.h>
 #include "dsda/ambient.h"
 #include "dsda/map_format.h"
 

@@ -47,7 +47,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 #include "doomdef.h"
 #include "doomstat.h"
@@ -94,7 +94,7 @@
 #include "dsda/save.h"
 #include "dsda/skill_info.h"
 #include "dsda/skip.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/console.h"
 #include "dsda/stretch.h"
 #include "dsda/text_color.h"
@@ -2960,7 +2960,7 @@ static const char *map_things_appearance_list[] =
 {
   "classic",
   "scaled",
-#if defined(HAVE_LIBSDL_IMAGE)
+#if defined(HAVE_LIBSDL2_IMAGE)
   "icons",
 #endif
   "hitboxes",

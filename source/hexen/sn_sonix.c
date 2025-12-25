@@ -15,7 +15,7 @@
 //
 
 #include <string.h>
-
+#include <strings.h>
 #include "doomdef.h"
 #include "m_random.h"
 #include "s_sound.h"

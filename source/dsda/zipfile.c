@@ -15,9 +15,12 @@
 //	DSDA zipfile support using libzip
 //
 
-#include <stdio.h>
-#include <zip.h>
 
+#include <stdio.h>
+/* not present
+#include <zip.h>
+*/
+#include "STUBS/zipfile_stubs.h"
 #include "i_system.h"
 #include "lprintf.h"
 #include "m_file.h"

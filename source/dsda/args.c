@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include <strings.h>
 #include "lprintf.h"
 #include "z_zone.h"
 

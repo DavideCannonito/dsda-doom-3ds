@@ -33,7 +33,7 @@
 
 
 #ifdef _WIN32
-# define strcmpnocase  stricmp
+# define strcmpnocase  strcasecmp
 #else
 # include <strings.h>
 # define strcmpnocase  strcasecmp

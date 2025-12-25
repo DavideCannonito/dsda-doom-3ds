@@ -589,9 +589,9 @@ static dboolean dsda_AutoDetectHeretic(void)
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found) {
     length = strlen(arg->value.v_string);
-    if (length >= 11 && !strnicmp(arg->value.v_string + length - 11, "heretic.wad", 11))
+    if (length >= 11 && !strncasecmp(arg->value.v_string + length - 11, "heretic.wad", 11))
       return true;
-    else if (length >= 12 && !strnicmp(arg->value.v_string + length - 12, "heretic1.wad", 12))
+    else if (length >= 12 && !strncasecmp(arg->value.v_string + length - 12, "heretic1.wad", 12))
       return true;
   }
 
@@ -605,7 +605,7 @@ static dboolean dsda_AutoDetectHexen(void)
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found) {
     length = strlen(arg->value.v_string);
-    if (length >= 9 && !strnicmp(arg->value.v_string + length - 9, "hexen.wad", 9))
+    if (length >= 9 && !strncasecmp(arg->value.v_string + length - 9, "hexen.wad", 9))
       return true;
   }
 

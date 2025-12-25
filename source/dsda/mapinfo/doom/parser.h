@@ -18,6 +18,7 @@
 #ifndef __DSDA_MAPINFO_DOOM_PARSER__
 #define __DSDA_MAPINFO_DOOM_PARSER__
 
+#include "doomtype.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

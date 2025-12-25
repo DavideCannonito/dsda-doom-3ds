@@ -32,8 +32,8 @@
  *-----------------------------------------------------------------------------
  */
 
-#include <SDL_render.h>
-#include <SDL_video.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -51,7 +51,7 @@
 #include <unistd.h>
 #endif
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 //e6y
 #ifdef _WIN32
 #include <SDL_syswm.h>
@@ -92,7 +92,7 @@
 #include "dsda/pause.h"
 #include "dsda/settings.h"
 #include "dsda/skip.h"
-#include "dsda/time.h"
+#include "dsda/dsda_time.h"
 #include "dsda/gl/render_scale.h"
 
 //e6y: new mouse code
@@ -978,9 +978,9 @@ static video_mode_t I_GetModeFromString(const char *modestr)
 {
   video_mode_t mode;
 
-  if (!stricmp(modestr,"gl")) {
+  if (!strcasecmp(modestr,"gl")) {
     mode = VID_MODEGL;
-  } else if (!stricmp(modestr,"OpenGL")) {
+  } else if (!strcasecmp(modestr,"OpenGL")) {
     mode = VID_MODEGL;
   } else {
     mode = VID_MODESW;

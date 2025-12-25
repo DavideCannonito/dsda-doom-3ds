@@ -24,7 +24,7 @@
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 
-#include "time.h"
+#include "dsda_time.h"
 
 // clock_gettime implementation for msvc
 // NOTE: Only supports CLOCK_MONOTONIC

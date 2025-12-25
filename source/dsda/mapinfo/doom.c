@@ -71,7 +71,7 @@ static doom_mapinfo_map_t* dsda_DoomMapEntryByName(const char* name) {
   int i;
 
   for (i = 0; i < doom_mapinfo.num_maps; ++i)
-    if (!stricmp(doom_mapinfo.maps[i].lump_name, name))
+    if (!strcasecmp(doom_mapinfo.maps[i].lump_name, name))
       return &doom_mapinfo.maps[i];
 
   return NULL;
@@ -167,7 +167,7 @@ int dsda_DoomPrevMap(int* episode, int* map) {
   for (i = 0; i < doom_mapinfo.num_maps; ++i)
     if (
       doom_mapinfo.maps[i].secret_next.map &&
-      !stricmp(doom_mapinfo.maps[i].secret_next.map, current_map->lump_name)
+      !strcasecmp(doom_mapinfo.maps[i].secret_next.map, current_map->lump_name)
     ) {
       *map = doom_mapinfo.maps[i].level_num;
       *episode = 1;
@@ -178,7 +178,7 @@ int dsda_DoomPrevMap(int* episode, int* map) {
   for (i = 0; i < doom_mapinfo.num_maps; ++i)
     if (
       doom_mapinfo.maps[i].next.map &&
-      !stricmp(doom_mapinfo.maps[i].next.map, current_map->lump_name)
+      !strcasecmp(doom_mapinfo.maps[i].next.map, current_map->lump_name)
     ) {
       *map = doom_mapinfo.maps[i].level_num;
       *episode = 1;
