@@ -33,7 +33,6 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_GRAPHICS
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -46,6 +45,7 @@
 #include <math.h>
 
 #include "gl_opengl.h"
+#include "STUBS/gl_preprocess_stubs.h"
 
 #include "z_zone.h"
 #include "doomstat.h"
@@ -1128,4 +1128,3 @@ void gld_ProcessTexturedMap(void)
     gld_TurnOffSubsectorTriangulation();
   }
 }
-#endif

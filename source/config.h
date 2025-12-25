@@ -5,14 +5,16 @@
 #define WAD_DATA "dsda-doom.wad"
 #define PROJECT_VERSION "0.29.4"
 #define PROJECT_STRING "dsda-doom 0.29.4"
-// dunno what these 2 are for
-#define DOOMWADDIR "@DOOMWADDIR@"
-#define DSDA_ABSOLUTE_PWAD_PATH "@DSDA_ABSOLUTE_PWAD_PATH@"
+/* dunno what these 2 are for
+   actually i do, from i_system.c:486
+*/
+#define DOOMWADDIR "romfs:/"
+#define DSDA_ABSOLUTE_PWAD_PATH "romfs:/dsda-doom.wad"
 
 #define HAVE_GETOPT
 #define HAVE_STRSIGNAL
 #define HAVE_MKSTEMP
-#define HAVE_GETPWUID
+#undef HAVE_GETPWUID
 #define HAVE_SYS_WAIT_H
 #define HAVE_UNISTD_H
 #define HAVE_DIRENT_H
@@ -33,7 +35,7 @@
 #undef HAVE_CREATE_FILE_MAPPING
 // can't find it in 3ds-portlibs group
 #undef HAVE_SNDFILE_MPEG
-// want all the checks - TEMPORARILY DISABLED. FIXME: NEED TO HUNT DOWN AN UNDEFINED "VIDEO" VARIABLE (r_drawflush.inl)
+// TEMPORARILY ENABLED
 #define SIMPLECHECKS
 // can't find it in 3ds-portlibs group
 #undef HAVE_LIBPORTMIDI
@@ -43,6 +45,7 @@
 #undef HAVE_ASM_BYTEORDER_H
 // we have wildmidi at home. TODO: see if it's possible to use
 #undef HAVE_LIBFLUIDSYNTH
+
 // personally added - remove libsndfile stuff
 #undef HAVE_LIBSNDFILE
 // personally added - not sure this port will ever need libzip, and there is no ported version of libzip

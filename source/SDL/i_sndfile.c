@@ -12,9 +12,9 @@
 //
 // DESCRIPTION:
 //      Load sound lumps with libsndfile.
-#ifdef HAVE_LIBSNDFILE
+
 #include <SDL2/SDL.h>
-#include "sndfile.h"
+#include "STUBS/i_sndfile_stubs.h"
 
 #include "lprintf.h"
 #include "memio.h"
@@ -143,4 +143,3 @@ void *Load_SNDFile(const void *data, SDL_AudioSpec *sample, void **sampledata,
 
   return sample;
 }
-#endif

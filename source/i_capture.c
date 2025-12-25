@@ -32,7 +32,9 @@
 #include <SDL2/SDL_thread.h>
 
 #include <stdio.h>
+#include "STUBS/i_capture_stubs.h"
 #include <stdlib.h>
+#include <sys/unistd.h>
 #include "i_sound.h"
 #include "i_video.h"
 #include "lprintf.h"
@@ -310,9 +312,6 @@ static void my_pclose3 (pipeinfo_t *p)
 #else // _WIN32
 // posix implementation
 // not tested
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 
 
 typedef struct

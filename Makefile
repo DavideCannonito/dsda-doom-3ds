@@ -13,8 +13,8 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET      := $(notdir $(CURDIR))
 BUILD       := build
-SOURCES     := source source/dsda source/heretic source/hexen source/MUSIC source/SDL
-SOURCES 	+= source/dsda/gl source/dsda/hud_components source/dsda/mapinfo source/dsda/doom source/dsda/utility 
+SOURCES     := source source/dsda source/heretic source/hexen source/MUSIC source/SDL source/STUBS
+SOURCES 	+= source/dsda/gl source/dsda/hud_components source/dsda/mapinfo source/dsda/mapinfo/doom source/dsda/doom source/dsda/utility 
 INCLUDES    := $(SOURCES)
 GRAPHICS    := gfx
 ROMFS       := romfs
@@ -23,13 +23,15 @@ GFXBUILD    := $(ROMFS)/gfx
 
 ARCH    := -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations
 
-CFLAGS  := -g -Wall -O2 -ffunction-sections $(ARCH)
-CFLAGS  += $(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99 -w # WILL REMOVE LATER. !DISABLES ALL WARNINGS FROM GCC!
+CFLAGS  := -g -Wall -O0 -ffunction-sections $(ARCH)
+CFLAGS  += $(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99
 CXXFLAGS:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 ASFLAGS := -g $(ARCH)
 LDFLAGS := -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
+LIBS	:= -lSDL2main -lSDL2_image -lSDL2_mixer -lSDL2 -lpng -ljpeg -lz -lopusfile
+LIBS	+= -lopus -logg -lvorbisidec -logg -lFLAC -lmodplug -lxmp -lmad -lmpg123 -lpicaGL -lcitro2d -lcitro3d -lctru -lm
 
-LIBS    := -lSDL2main -lSDL2 -lcitro2d -lcitro3d -lctru -lm
+
 LIBDIRS := $(CTRULIB) $(PORTLIBS)
 
 #---------------------------------------------------------------------------------

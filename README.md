@@ -1,3 +1,8 @@
+# dsda-doom-3ds
+As I do not know the legality of it, copy `DOOM1.WAD` yourself in `romfs:/`
+ORIGINAL BELOW
+
+
 # dsda-doom v0.29.3
 This is a successor of prboom+ with many new features, including:
 - Heretic, Hexen, MBF21, Doom-in-Hexen, UDMF, and MAPINFO support

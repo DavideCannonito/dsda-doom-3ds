@@ -15,10 +15,12 @@
 //	DSDA zipfile support using libzip
 //
 
-#ifdef HAVE_LIBZIP
-#include <stdio.h>
-#include <zip.h>
 
+#include <stdio.h>
+/* not present
+#include <zip.h>
+*/
+#include "STUBS/zipfile_stubs.h"
 #include "i_system.h"
 #include "lprintf.h"
 #include "m_file.h"
@@ -158,4 +160,3 @@ void dsda_CleanZipTempDirs(void) {
   }
   Z_Free(temp_dirs);
 }
-#endif
