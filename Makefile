@@ -13,7 +13,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET      := $(notdir $(CURDIR))
 BUILD       := build
-SOURCES     := source source/dsda source/heretic source/hexen source/MUSIC source/SDL source/STUBS
+SOURCES     := source source/dsda source/heretic source/hexen source/MUSIC source/SDL source/STUBS source/NINTENDO_3DS
 SOURCES 	+= source/dsda/gl source/dsda/hud_components source/dsda/mapinfo source/dsda/mapinfo/doom source/dsda/doom source/dsda/utility 
 INCLUDES    := $(SOURCES)
 GRAPHICS    := gfx

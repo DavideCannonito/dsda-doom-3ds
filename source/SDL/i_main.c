@@ -34,6 +34,8 @@
  *-----------------------------------------------------------------------------
  */
 
+#include "3ds/console.h"
+#include "3ds/gfx.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -70,6 +72,7 @@
 #include <stdlib.h>
 
 #include "e6y.h"
+#include "NINTENDO_3DS/i_misc.h"
 
 #include "dsda.h"
 #include "dsda/args.h"
@@ -194,6 +197,11 @@ void I_SafeExit(int rc)
     }
   }
 
+  if(rc!=0){
+
+    I_GoSpinningLoop();
+  }
+
   exit(rc);
 }
 
@@ -265,6 +273,9 @@ void I_SetProcessPriority(void)
 //int main(int argc, const char * const * argv)
 int main(int argc, char **argv)
 {
+  gfxInitDefault();
+  consoleInit(GFX_BOTTOM, NULL);
+  
   dsda_ParseCommandLineArgs(argc, argv);
 
   if (dsda_Flag(dsda_arg_verbose))
