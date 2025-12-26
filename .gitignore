@@ -42,3 +42,6 @@ vcpkg_installed
 out
 CMakeSettings.json
 CMakeUserPresets.json
+
+# clangd
+/.cache/
