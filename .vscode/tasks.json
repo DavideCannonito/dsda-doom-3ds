@@ -1,0 +1,43 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "detail": "Build dsda-doom-3ds",
+            "label": "Build the game",
+            "type": "shell",
+            "command": "bear --append -- make",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "detail":"Build dsda-doom-3ds if needed and send to the console via 3dslink.",
+            "dependsOn":["Build the game"],
+            "label": "Send to console",
+            "type": "shell",
+            "command": "3dslink -a ${input:ipAddress} dsda-doom-3ds.3dsx",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Clean build",
+            "type": "shell",
+            "command": "make clean",
+            "problemMatcher": []
+        },
+    ],
+    "inputs": [
+        {
+            "description": "3DS' IP address",
+            "id": "ipAddress",
+            "type": "promptString"
+        }
+    ]
+}
