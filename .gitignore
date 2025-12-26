@@ -8,6 +8,7 @@
 /dsda-doom-3ds.elf
 /dsda-doom-3ds.3dsx
 /dsda-doom-3ds.lst
+/compile_commands.json
 
 # SDL2 libraries to build
 /extern/sdl2-sources/SDL2/*
@@ -41,7 +42,3 @@ vcpkg_installed
 out
 CMakeSettings.json
 CMakeUserPresets.json
-
-# Visual Studio Code
-/.vscode/**
-!/.vscode/extension.json
