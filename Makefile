@@ -1,4 +1,5 @@
-# FILE CORRECTED BY CHATGPT BY SENDING THE FULL `Makefile.old` FILE.
+# FILE CORRECTED BY ~CHATGPT~ *buzzer* ~CLAUDE~ *buzzer* ~DEEPSEEK~ *buzzer* by *GEMINI*
+# BY SENDING THE FULL `Makefile.old` FILE (and going back and forth for at less than 10 msgs).
 #---------------------------------------------------------------------------------
 .SUFFIXES:
 #---------------------------------------------------------------------------------
@@ -10,27 +11,38 @@ endif
 
 TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
+
 #---------------------------------------------------------------------------------
-TARGET      := $(notdir $(CURDIR))
-BUILD       := build
+# TARGET E DIRECTORY
+#---------------------------------------------------------------------------------
+TARGET      :=  $(notdir $(CURDIR))
+BUILD       :=  build
 SOURCES     := source source/dsda source/heretic source/hexen source/MUSIC source/SDL source/STUBS source/NINTENDO_3DS
-SOURCES 	+= source/dsda/gl source/dsda/hud_components source/dsda/mapinfo source/dsda/mapinfo/doom source/dsda/doom source/dsda/utility 
-INCLUDES    := $(SOURCES)
-GRAPHICS    := gfx
-ROMFS       := romfs
-GFXBUILD    := $(ROMFS)/gfx
+SOURCES     += source/dsda/gl source/dsda/hud_components source/dsda/mapinfo source/dsda/mapinfo/doom source/dsda/doom source/dsda/utility 
+
+INCLUDES    :=  $(SOURCES)
+GRAPHICS    :=  gfx
+ROMFS       :=  romfs
+GFXBUILD    :=  $(ROMFS)/gfx
+
 #---------------------------------------------------------------------------------
+# OPZIONI DI GENERAZIONE CODICE
+#---------------------------------------------------------------------------------
+ARCH    :=  -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations
 
-ARCH    := -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations
+CFLAGS  :=  -g -Wall -O0 \
+            -ffunction-sections \
+            $(ARCH)
 
-CFLAGS  := -g -Wall -O0 -ffunction-sections $(ARCH)
-CFLAGS  += $(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99
-CXXFLAGS:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
-ASFLAGS := -g $(ARCH)
-LDFLAGS := -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
-LIBS	:= -lSDL2main -lSDL2_image -lSDL2_mixer -lSDL2 -lpng -ljpeg -lz -lopusfile
-LIBS	+= -lopus -logg -lvorbisidec -logg -lFLAC -lmodplug -lxmp -lmad -lmpg123 -lpicaGL -lcitro2d -lcitro3d -lctru -lm
+CFLAGS  +=  $(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99
 
+CXXFLAGS    := $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+
+ASFLAGS :=  -g $(ARCH)
+LDFLAGS =   -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
+
+LIBS    := -lSDL2main -lSDL2_image -lSDL2_mixer -lSDL2 -lpng -ljpeg -lz -lopusfile
+LIBS    += -lopus -logg -lvorbisidec -logg -lFLAC -lmodplug -lxmp -lmad -lmpg123 -lpicaGL -lcitro2d -lcitro3d -lctru -lm
 
 LIBDIRS := $(CTRULIB) $(PORTLIBS)
 
@@ -38,91 +50,136 @@ LIBDIRS := $(CTRULIB) $(PORTLIBS)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
-export OUTPUT  := $(CURDIR)/$(TARGET)
-export TOPDIR  := $(CURDIR)
+export OUTPUT   :=  $(CURDIR)/$(TARGET)
+export TOPDIR   :=  $(CURDIR)
+export DEPSDIR  :=  $(CURDIR)/$(BUILD)
 
-export DEPSDIR := $(CURDIR)/$(BUILD)
-
-# --- FIX: keep paths, do NOT use notdir (prevents double compilation) ---
-CFILES      := $(foreach d,$(SOURCES),$(wildcard $(d)/*.c))
-CPPFILES    := $(foreach d,$(SOURCES),$(wildcard $(d)/*.cpp))
-SFILES      := $(foreach d,$(SOURCES),$(wildcard $(d)/*.s))
-PICAFILES   := $(foreach d,$(SOURCES),$(wildcard $(d)/*.v.pica))
-SHLISTFILES := $(foreach d,$(SOURCES),$(wildcard $(d)/*.shlist))
-GFXFILES    := $(foreach d,$(GRAPHICS),$(wildcard $(d)/*.t3s))
-
-export VPATH := $(CURDIR)
+CFILES      :=  $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
+CPPFILES    :=  $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp))
+SFILES      :=  $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.s))
+PICAFILES   :=  $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.v.pica))
+SHLISTFILES :=  $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.shlist))
+GFXFILES    :=  $(foreach dir,$(GRAPHICS),$(wildcard $(dir)/*.t3s))
+BINFILES    :=  $(foreach dir,$(DATA),$(wildcard $(dir)/*.*))
 
 ifeq ($(strip $(CPPFILES)),)
-export LD := $(CC)
+    export LD   :=  $(CC)
 else
-export LD := $(CXX)
+    export LD   :=  $(CXX)
 endif
-
-export OFILES_SOURCES := \
-	$(CFILES:%.c=$(BUILD)/%.o) \
-	$(CPPFILES:%.cpp=$(BUILD)/%.o) \
-	$(SFILES:%.s=$(BUILD)/%.o)
 
 ifeq ($(GFXBUILD),$(BUILD))
-export T3XFILES := $(GFXFILES:.t3s=.t3x)
+export T3XFILES :=  $(GFXFILES:.t3s=.t3x)
 else
-export ROMFS_T3XFILES := $(GFXFILES:%.t3s=$(GFXBUILD)/%.t3x)
-export T3XHFILES      := $(GFXFILES:%.t3s=$(BUILD)/%.h)
+export ROMFS_T3XFILES   :=  $(patsubst %.t3s, $(GFXBUILD)/%.t3x, $(GFXFILES))
+export T3XHFILES        :=  $(patsubst %.t3s, $(BUILD)/%.h, $(GFXFILES))
 endif
 
-export OFILES := $(OFILES_SOURCES) $(addsuffix .o,$(T3XFILES))
+export OFILES_SOURCES   :=  $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES_BIN   :=  $(addsuffix .o,$(BINFILES)) \
+            $(PICAFILES:.v.pica=.shbin.o) $(SHLISTFILES:.shlist=.shbin.o) \
+            $(addsuffix .o,$(T3XFILES))
 
-export INCLUDE := \
-	$(foreach d,$(INCLUDES),-I$(CURDIR)/$(d)) \
-	$(foreach d,$(LIBDIRS),-I$(d)/include) \
-	-I$(CURDIR)/$(BUILD)
+export OFILES := $(OFILES_BIN) $(OFILES_SOURCES)
 
-export LIBPATHS := $(foreach d,$(LIBDIRS),-L$(d)/lib)
+export HFILES   :=  $(PICAFILES:.v.pica=_shbin.h) $(SHLISTFILES:.shlist=_shbin.h) \
+            $(addsuffix .h,$(subst .,_,$(BINFILES))) \
+            $(GFXFILES:.t3s=.h)
 
-export _3DSXDEPS := $(if $(NO_SMDH),,$(OUTPUT).smdh)
+export INCLUDE  :=  $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+            $(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+            -I$(CURDIR)/$(BUILD)
+
+export LIBPATHS :=  $(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+
+export _3DSXDEPS    :=  $(if $(NO_SMDH),,$(OUTPUT).smdh)
+
+ifeq ($(strip $(ICON)),)
+    icons := $(wildcard *.png)
+    ifneq (,$(findstring $(TARGET).png,$(icons)))
+        export APP_ICON := $(TOPDIR)/$(TARGET).png
+    else
+        ifneq (,$(findstring icon.png,$(icons)))
+            export APP_ICON := $(TOPDIR)/icon.png
+        endif
+    endif
+else
+    export APP_ICON := $(TOPDIR)/$(ICON)
+endif
+
+ifeq ($(strip $(NO_SMDH)),)
+    export _3DSXFLAGS += --smdh=$(CURDIR)/$(TARGET).smdh
+endif
+
+ifneq ($(ROMFS),)
+    export _3DSXFLAGS += --romfs=$(CURDIR)/$(ROMFS)
+endif
 
 .PHONY: all clean
 
-all: $(BUILD) $(GFXBUILD)
+# Rimosso $(BUILD) dalle dipendenze per evitare il loop circolare
+all: $(GFXBUILD) $(ROMFS_T3XFILES) $(T3XHFILES)
+	@[ -d $(BUILD) ] || mkdir -p $(BUILD)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
-$(BUILD):
-	@mkdir -p $@
-
+ifneq ($(GFXBUILD),$(BUILD))
 $(GFXBUILD):
 	@mkdir -p $@
+endif
 
 clean:
-	@rm -rf $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD)
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).3dsx $(TARGET).smdh $(TARGET).elf $(GFXBUILD)
+
+$(GFXBUILD)/%.t3x   $(BUILD)/%.h    :   %.t3s
+	@echo $(notdir $<)
+	@mkdir -p $(dir $@)
+	@tex3ds -i $< -H $(BUILD)/$*.h -d $(DEPSDIR)/$*.d -o $(GFXBUILD)/$*.t3x
 
 #---------------------------------------------------------------------------------
 else
 #---------------------------------------------------------------------------------
 
-$(OUTPUT).3dsx : $(OUTPUT).elf $(_3DSXDEPS)
+VPATH := $(TOPDIR)
 
-$(OUTPUT).elf : $(OFILES)
+$(OUTPUT).3dsx  :   $(OUTPUT).elf $(_3DSXDEPS)
 
-$(BUILD)/%.o : %.c
+$(OFILES_SOURCES) : $(HFILES)
+
+$(OUTPUT).elf   :   $(OFILES)
+
+%.o: %.c
+	@echo "$<"
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
+	@$(CC) -MMD -MP -MF $(DEPSDIR)/$*.d $(CFLAGS) -c $< -o $@
 
-$(BUILD)/%.o : %.cpp
+%.o: %.cpp
+	@echo "$<"
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	@$(CXX) -MMD -MP -MF $(DEPSDIR)/$*.d $(CXXFLAGS) -c $< -o $@
 
-$(BUILD)/%.o : %.s
+%.o: %.s
+	@echo "$<"
 	@mkdir -p $(dir $@)
-	$(AS) $(ASFLAGS) -c $< -o $@
+	@$(CC) -MMD -MP -MF $(DEPSDIR)/$*.d $(ASFLAGS) -c $< -o $@
 
-$(GFXBUILD)/%.t3x $(BUILD)/%.h : %.t3s
-	@mkdir -p $(dir $(GFXBUILD)/$*)
-	@mkdir -p $(dir $(BUILD)/$*)
-	tex3ds -i $< -H $(BUILD)/$*.h -o $(GFXBUILD)/$*.t3x
+%.bin.o %_bin.h : %.bin
+	@echo $(notdir $<)
+	@mkdir -p $(dir $@)
+	@$(bin2o)
 
--include $(DEPSDIR)/**/*.d
+.PRECIOUS   :   %.t3x %.shbin
 
-#---------------------------------------------------------------------------------
+%.t3x.o %_t3x.h : %.t3x
+	@echo $(notdir $<)
+	@mkdir -p $(dir $@)
+	@$(bin2o)
+
+%.shbin.o %_shbin.h : %.shbin
+	@echo $(notdir $<)
+	@mkdir -p $(dir $@)
+	@$(bin2o)
+
+-include $(OFILES:.o=.d)
+
 endif
-#---------------------------------------------------------------------------------
