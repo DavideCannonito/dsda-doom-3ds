@@ -5,7 +5,7 @@ void I_GoSpinningLoop(void) {
 
   // TODO: Hook the inputs to DOOM's one, if possible? (ig the input subsystem
   // shuts down?)
-  while (true) {
+  while (aptMainLoop()) {
     hidScanInput();
 
     u32 kDown = hidKeysDown();

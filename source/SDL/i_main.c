@@ -34,8 +34,7 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "3ds/console.h"
-#include "3ds/gfx.h"
+#include <3ds.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -66,7 +65,7 @@
 #include "i_main.h"
 #include "r_fps.h"
 #include "lprintf.h"
-
+#include "NINTENDO_3DS/i_scanwad.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -273,10 +272,26 @@ void I_SetProcessPriority(void)
 //int main(int argc, const char * const * argv)
 int main(int argc, char **argv)
 {
+  // these will be passed to parse the command line args.
+  int realargc=0;
+  char** realargv=malloc(ARG_MAX*sizeof(char*));
+
+  if(realargv==NULL){
+    I_Error("Cannot allocate memory for argv");
+  }
+  memset(realargv, 0, ARG_MAX*sizeof(char*));
+  
   gfxInitDefault();
   consoleInit(GFX_BOTTOM, NULL);
+
+  // SDL should already init this.
+  romfsInit();
+
+  // will add -file and -iwad internally. Hard-coded path.
+  I_ScanWADFiles(DOOMWADDIR, &realargc, realargv);
   
-  dsda_ParseCommandLineArgs(argc, argv);
+  
+  dsda_ParseCommandLineArgs(realargc, realargv);
 
   if (dsda_Flag(dsda_arg_verbose))
     I_EnableVerboseLogging();
