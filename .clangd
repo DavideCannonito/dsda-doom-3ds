@@ -19,6 +19,7 @@ CompileFlags:
     -DHAVE_CONFIG_H,
     -D_GNU_SOURCE,
   ]
+  Remove: [-mword-relocations]
   BuiltinHeaders: QueryDriver
   Compiler: /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
 
@@ -28,6 +29,8 @@ If:
 CompileFlags:
   Add: [-std=c99]
 
+Completion:
+  HeaderInsertion: Never
 ---
 If:
   PathMatch: .*\.(cpp|cc|cxx)$
