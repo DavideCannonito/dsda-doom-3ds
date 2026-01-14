@@ -4,6 +4,7 @@
 /release*
 /romfs/*
 !/romfs/dsda-doom.wad
+!/romfs/dsda-doom.cfg
 /dsda-doom-3ds.smdh
 /dsda-doom-3ds.elf
 /dsda-doom-3ds.3dsx
