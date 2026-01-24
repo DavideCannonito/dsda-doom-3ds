@@ -269,7 +269,6 @@ void I_SetProcessPriority(void)
   }
 }
 
-//int main(int argc, const char * const * argv)
 int main(int argc, char **argv)
 {
   // these will be passed to parse the command line args.
@@ -284,10 +283,10 @@ int main(int argc, char **argv)
   gfxInitDefault();
   consoleInit(GFX_BOTTOM, NULL);
 
-  // SDL should already init this.
+  // SDL should be already init'ing this.
   romfsInit();
 
-  // will add -file and -iwad internally. Hard-coded path.
+  // will add -file and -iwad internally. TODO: change hardcoded path.
   I_ScanWADFiles(DOOMWADDIR, &realargc, realargv);
   
   
@@ -354,6 +353,7 @@ int main(int argc, char **argv)
 #endif
 
   // Priority class for the prboom-plus process
+  // TODO: Remove this as it's not for Nintendo 3DS
   I_SetProcessPriority();
 
   /* cphipps - call to video specific startup code */
