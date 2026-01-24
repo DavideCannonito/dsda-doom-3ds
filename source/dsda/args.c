@@ -15,6 +15,16 @@
 //	DSDA (Command Line) Args
 //
 
+/* TODO: Remove the following args (by id):
+  - [ ] dsda_arg_nojoy
+  - [ ] dsda_arg_fullscreen
+  - [ ] dsda_arg_window
+  - [ ] dsda_arg_width
+  - [ ] dsda_arg_height
+  - [ ] dsda_arg_geometry
+
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>

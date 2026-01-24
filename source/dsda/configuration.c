@@ -14,6 +14,14 @@
 // DESCRIPTION:
 //	DSDA Config
 //
+/* TODO: Remove the following configuration entries (by id):
+  - [ ] dsda_config_use_game_controller
+  - [ ] dsda_config_screen_resolution
+  - [ ] dsda_config_use_fullscreen
+
+*/
+
+
 
 #include <string.h>
 
