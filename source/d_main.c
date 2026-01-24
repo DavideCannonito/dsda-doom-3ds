@@ -82,7 +82,7 @@
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "am_map.h"
 #include "e6y.h"
-
+#include "NINTENDO_3DS/i_misc.h"
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
@@ -573,8 +573,8 @@ static void D_DoomLoop(void)
 {
   if (dsda_IntConfig(dsda_config_startup_delay_ms) > 0)
     I_uSleep(dsda_IntConfig(dsda_config_startup_delay_ms) * 1000);
-
-  for (;;)
+  // TODO: see which approach is cleaner for quitting the game
+  while(I_SystemLoop())
   {
     if (I_Interrupted())
       I_SafeExit(0);

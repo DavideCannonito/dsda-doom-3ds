@@ -1,5 +1,11 @@
 #include "lprintf.h"
 #include <3ds.h>
+
+// Wrapper for aptMainLoop(). Use it to not directly depend on platform-specific functions
+bool I_SystemLoop(){
+  return aptMainLoop();
+}
+
 void I_GoSpinningLoop(void) {
   lprintf(LO_INFO, "Press START+SELECT to quit...\n");
 
