@@ -915,10 +915,6 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
 // CPhipps -
 // I_CalculateRes
 // Calculates the screen resolution, possibly using the supplied guide
-/* TODO:
-  - [ ] Prevent changing resolution
-
-*/
 void I_CalculateRes(int width, int height)
 {
   SCREENWIDTH = width;
