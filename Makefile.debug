@@ -30,7 +30,7 @@ GFXBUILD    :=  $(ROMFS)/gfx
 #---------------------------------------------------------------------------------
 ARCH    :=  -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations
 
-CFLAGS  :=  -g -Wall -O3 \
+CFLAGS  :=  -g -Wall -O0 \
             -ffunction-sections \
             $(ARCH)
 
@@ -120,7 +120,7 @@ endif
 # Rimosso $(BUILD) dalle dipendenze per evitare il loop circolare
 all: $(GFXBUILD) $(ROMFS_T3XFILES) $(T3XHFILES)
 	@[ -d $(BUILD) ] || mkdir -p $(BUILD)
-	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.debug
 
 ifneq ($(GFXBUILD),$(BUILD))
 $(GFXBUILD):
