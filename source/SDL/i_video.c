@@ -709,27 +709,12 @@ const char *screen_resolutions_list[MAX_RESOLUTIONS_COUNT] = {NULL};
 
 //
 // I_GetScreenResolution
-// Get current resolution from the config variable (WIDTHxHEIGHT format)
-// 640x480 if screen_resolution variable has wrong data
-//
+// Forcibly set 400x240 for the 3DS screen resolution.
+// TODO: It is probably involved in implementing stereoscopic 3D. Look into it
 void I_GetScreenResolution(void)
 {
-  int width, height;
-  const char *screen_resolution;
-
-  desired_screenwidth = 640;
-  desired_screenheight = 480;
-
-  screen_resolution = dsda_StringConfig(dsda_config_screen_resolution);
-
-  if (screen_resolution)
-  {
-    if (sscanf(screen_resolution, "%dx%d", &width, &height) == 2)
-    {
-      desired_screenwidth = width;
-      desired_screenheight = height;
-    }
-  }
+  desired_screenwidth = 400;
+  desired_screenheight = 240;
 }
 
 // make sure the canonical resolutions are always available
@@ -1005,6 +990,9 @@ static video_mode_t I_DesiredVideoMode(void) {
 // CPhipps -
 // I_InitScreenResolution
 // Sets the screen resolution
+/* TODO:
+  - [ ] Prevent changing resolution from config/args
+*/
 void I_InitScreenResolution(void)
 {
   int i, w, h;
@@ -1023,7 +1011,7 @@ void I_InitScreenResolution(void)
     I_FillScreenResolutionsList();
 
     if (dsda_Flag(dsda_arg_fullscreen))
-    desired_fullscreen = 1;
+      desired_fullscreen = 1;
 
     if (dsda_Flag(dsda_arg_window))
       desired_fullscreen = 0;
@@ -1159,7 +1147,11 @@ void I_InitGraphics(void)
     UpdateGrab();
   }
 }
-
+/* TODO:
+ - [X] Set correct color palette for 3DS' top screen
+ - [ ] Add hardware acceleration with citro3d
+ - [ ] Remove unneeded code
+*/
 void I_UpdateVideoMode(void)
 {
   int init_flags = SDL_WINDOW_ALLOW_HIGHDPI;
@@ -1291,7 +1283,7 @@ void I_UpdateVideoMode(void)
     SDL_RenderSetIntegerScale(sdl_renderer, integer_scaling);
 
     screen = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 8, 0, 0, 0, 0);
-    buffer = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 32, 0, 0, 0, 0);
+    buffer = SDL_CreateRGBSurfaceWithFormat(0, SCREENWIDTH, SCREENHEIGHT, 32,SDL_PIXELFORMAT_RGB565);
     SDL_FillRect(buffer, NULL, 0);
 
     sdl_texture = SDL_CreateTextureFromSurface(sdl_renderer, buffer);
@@ -1304,6 +1296,7 @@ void I_UpdateVideoMode(void)
   // When creating the window, its not allowed to set a position in a different display
   // This allows that
   SDL_SetWindowPosition(sdl_window, x, y);
+
 
   if (desired_fullscreen)
   {
