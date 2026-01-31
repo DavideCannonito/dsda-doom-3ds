@@ -1,10 +1,9 @@
 #include "lprintf.h"
 #include <3ds.h>
 
-// Wrapper for aptMainLoop(). Use it to not directly depend on platform-specific functions
-bool I_SystemLoop(){
-  return aptMainLoop();
-}
+// Wrapper for aptMainLoop(). Use it to not directly depend on platform-specific
+// functions
+bool I_SystemLoop() { return aptMainLoop(); }
 
 void I_GoSpinningLoop(void) {
   lprintf(LO_INFO, "Press START+SELECT to quit...\n");
@@ -21,4 +20,10 @@ void I_GoSpinningLoop(void) {
       return;
     }
   }
+}
+
+bool I_CheckN3DS() {
+  bool check = false;
+  APT_CheckNew3DS(&check);
+  return check;
 }

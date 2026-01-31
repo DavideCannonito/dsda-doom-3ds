@@ -121,9 +121,9 @@ static inline int PollButton(dsda_game_controller_button_t button)
   return SDL_GameControllerGetButton(game_controller, (SDL_GameControllerButton) button) << button;
 }
 /* TODO:
-  - [ ] Read how it works and how are inputs processed
-  - [ ] See how to remap controls
-  - [ ] Create a control scheme for O3DS
+  - [X] Read how it works and how are inputs processed
+  - [ ] See how to remap controls - LOOK m_misc.c:388
+  - [ ] Create a control scheme for O3DS - LOOK m_misc.c:388
 */
 void dsda_PollGameControllerButtons(void) {
   event_t ev;
@@ -194,10 +194,6 @@ void dsda_InitGameControllerParameters(void) {
   swap_analogs = dsda_IntConfig(dsda_config_swap_analogs);
 }
 
-/* TODO:
-  - [X] Enable SDL2's joystick support
-  - [X] Check if 3DS controller is probed here
-*/
 void dsda_InitGameController(void) {
   int num_joysticks;
 
