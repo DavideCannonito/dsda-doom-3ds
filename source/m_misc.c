@@ -882,6 +882,7 @@ void M_LoadDefaults (void)
 
   dsda_InitConfig();
   // TODO: Make it overridable in-game.
+  /* TODO: INVESTIGATE BETTER APPROACHES/MAKE IT CLEANER*/
   bool setO3DS=!I_CheckN3DS();
   for (i = 0; i < input_def_count; i++) {
     int c;
