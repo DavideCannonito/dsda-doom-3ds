@@ -37,7 +37,7 @@
 #ifndef __V_VIDEO__
 #define __V_VIDEO__
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "doomtype.h"
 #include "doomdef.h"

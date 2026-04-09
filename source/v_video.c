@@ -40,7 +40,7 @@
 #endif
 
 #include <assert.h>
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "doomdef.h"
 #include "doomstat.h"

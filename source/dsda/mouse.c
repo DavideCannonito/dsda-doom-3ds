@@ -15,7 +15,7 @@
 //	DSDA Mouse
 //
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "dsda/configuration.h"
 #include "dsda/features.h"

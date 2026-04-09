@@ -36,7 +36,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "doomstat.h"
 #include "d_net.h"

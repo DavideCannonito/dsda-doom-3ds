@@ -38,10 +38,10 @@
 
 #include <stdlib.h>
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #ifdef HAVE_LIBSDL2_IMAGE
-#include <SDL2/SDL_image.h>
+#include <SDL/SDL_image.h>
 #endif
 
 #include "doomstat.h"

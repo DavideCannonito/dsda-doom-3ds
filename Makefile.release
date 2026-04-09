@@ -41,7 +41,7 @@ CXXFLAGS    := $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 ASFLAGS :=  -g $(ARCH)
 LDFLAGS =   -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS    := -lSDL2main -lSDL2_image -lSDL2_mixer -lSDL2 -lpng -ljpeg -lz -lopusfile
+LIBS    := -lSDLmain -lSDL_image -lSDL_mixer -lSDL -lpng -ljpeg -lz -lopusfile
 LIBS    += -lopus -logg -lvorbisidec -logg -lFLAC -lmodplug -lxmp -lmad -lmpg123 -lpicaGL -lcitro2d -lcitro3d -lctru -lm
 
 LIBDIRS := $(CTRULIB) $(PORTLIBS)

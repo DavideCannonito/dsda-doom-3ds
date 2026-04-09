@@ -40,16 +40,16 @@
 #include <unistd.h>
 #endif
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
-#include <SDL2/SDL_mutex.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_audio.h>
+#include <SDL/SDL_mutex.h>
 
-#include <SDL2/SDL_endian.h>
+#include <SDL/SDL_endian.h>
 
-#include <SDL2/SDL_version.h>
-#include <SDL2/SDL_thread.h>
+#include <SDL/SDL_version.h>
+#include <SDL/SDL_thread.h>
 #define USE_RWOPS
-#include <SDL2/SDL_mixer.h>
+#include <SDL/SDL_mixer.h>
 
 #include "z_zone.h"
 
