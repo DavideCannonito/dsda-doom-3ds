@@ -6222,12 +6222,13 @@ void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
   if (mnact > mnact_inactive && gamestate == GS_LEVEL)
     dsda_TrackFeature(uf_menu);
 
-  if (SDL_IsTextInputActive()) {
+  // -1 is to enquire status
+  if (SDL_EnableUNICODE(-1)) {
     if (!(currentMenu && currentMenu->flags & MENUF_TEXTINPUT))
-      SDL_StopTextInput();
+      SDL_EnableUNICODE(0);
   }
   else if (currentMenu && currentMenu->flags & MENUF_TEXTINPUT)
-    SDL_StartTextInput();
+    SDL_EnableUNICODE(0);
 }
 
 //

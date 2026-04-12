@@ -448,7 +448,7 @@ static const char *I_GetBasePath(void)
   static char *executable_dir;
   /* SDL_GetBasePath is an expensive call */
   if (!executable_dir)
-    executable_dir = SDL_GetBasePath();
+    executable_dir = "/path/to/doot/files";
   return executable_dir;
 }
 

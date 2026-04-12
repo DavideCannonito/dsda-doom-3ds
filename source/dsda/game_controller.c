@@ -27,20 +27,27 @@
 #include "game_controller.h"
 
 static int use_game_controller;
-static SDL_GameController* game_controller;
+static SDL_Joystick* game_controller;
+
+typedef enum N3DSAxis{
+  STICK_LEFTX=0,
+  STICK_LEFTY=1,
+  CSTICK_X=2,
+  CSTICK_Y=3
+}N3DSAxis;
+
 
 typedef struct {
-  SDL_GameControllerAxis axis;
+  N3DSAxis axis;
   int deadzone;
   int sensitivity;
 } axis_t;
 
-static axis_t left_analog_x = { SDL_CONTROLLER_AXIS_LEFTX };
-static axis_t left_analog_y = { SDL_CONTROLLER_AXIS_LEFTY };
-static axis_t right_analog_x = { SDL_CONTROLLER_AXIS_RIGHTX };
-static axis_t right_analog_y = { SDL_CONTROLLER_AXIS_RIGHTY };
-static axis_t left_trigger = { SDL_CONTROLLER_AXIS_TRIGGERLEFT };
-static axis_t right_trigger = { SDL_CONTROLLER_AXIS_TRIGGERRIGHT };
+static axis_t left_analog_x = { STICK_LEFTX };
+static axis_t left_analog_y = { STICK_LEFTY };
+static axis_t right_analog_x = { CSTICK_X };
+static axis_t right_analog_y = { CSTICK_Y };
+
 
 static int swap_analogs;
 
@@ -78,9 +85,9 @@ const char* dsda_GameControllerButtonName(int button) {
 }
 
 static float dsda_AxisValue(axis_t* axis) {
-  int value;
+  Sint16 value;
 
-  value = SDL_GameControllerGetAxis(game_controller, axis->axis);
+  value = SDL_JoystickGetAxis(game_controller, axis->axis);
 
   // the positive axis max is 1 less
   if (value > (axis->deadzone - 1))
@@ -114,11 +121,11 @@ static void dsda_PollRightStick(void) {
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
 }
-
+// TODO: match dsda_game_controller_button_t enum to SDL joystick enums. SDL 1.2 treats DPAD as HATs and not buttons 
 static inline int PollButton(dsda_game_controller_button_t button)
 {
   // This depends on enums having same values
-  return SDL_GameControllerGetButton(game_controller, (SDL_GameControllerButton) button) << button;
+  return SDL_JoystickGetButton(game_controller, button) << button;
 }
 /* TODO:
   - [X] Read how it works and how are inputs processed
@@ -144,6 +151,8 @@ void dsda_PollGameControllerButtons(void) {
                PollButton(DSDA_CONTROLLER_BUTTON_RIGHTSTICK) |
                PollButton(DSDA_CONTROLLER_BUTTON_LEFTSHOULDER) |
                PollButton(DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER) |
+               PollButton(DSDA_CONTROLLER_BUTTON_TRIGGERLEFT)|
+               PollButton(DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT)|
                PollButton(DSDA_CONTROLLER_BUTTON_DPAD_UP) |
                PollButton(DSDA_CONTROLLER_BUTTON_DPAD_DOWN) |
                PollButton(DSDA_CONTROLLER_BUTTON_DPAD_LEFT) |
@@ -155,13 +164,15 @@ void dsda_PollGameControllerButtons(void) {
                PollButton(DSDA_CONTROLLER_BUTTON_PADDLE4) |
                PollButton(DSDA_CONTROLLER_BUTTON_TOUCHPAD);
 
-  trigger = dsda_AxisValue(&left_trigger);
-  if (trigger)
-    ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERLEFT);
+  // this code doesn't apply to the 3DS because the triggers are treated as buttons
 
-  trigger = dsda_AxisValue(&right_trigger);
-  if (trigger)
-    ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT);
+  // trigger = dsda_AxisValue(&left_trigger);
+  // if (trigger)
+  //   ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERLEFT);
+
+  // trigger = dsda_AxisValue(&right_trigger);
+  // if (trigger)
+  //   ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT);
 
   D_PostEvent(&ev);
 }
@@ -186,11 +197,6 @@ void dsda_InitGameControllerParameters(void) {
   right_analog_y.deadzone = right_analog_x.deadzone;
   right_analog_y.sensitivity = dsda_IntConfig(dsda_config_right_analog_sensitivity_y);
 
-  left_trigger.deadzone = dsda_IntConfig(dsda_config_left_trigger_deadzone);
-  left_trigger.sensitivity = 1;
-  right_trigger.deadzone = dsda_IntConfig(dsda_config_right_trigger_deadzone);
-  right_trigger.sensitivity = 1;
-
   swap_analogs = dsda_IntConfig(dsda_config_swap_analogs);
 }
 
@@ -204,7 +210,7 @@ void dsda_InitGameController(void) {
     return;
 
   dsda_InitGameControllerParameters();
-  SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
+  SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 
   num_joysticks = SDL_NumJoysticks();
 
@@ -214,13 +220,7 @@ void dsda_InitGameController(void) {
     return;
   }
 
-  if (!SDL_IsGameController(use_game_controller - 1)) {
-    lprintf(LO_WARN, "dsda_InitGameController: unsupported joystick %d\n",
-            use_game_controller);
-    return;
-  }
-
-  game_controller = SDL_GameControllerOpen(use_game_controller - 1);
+  game_controller = SDL_JoystickOpen(use_game_controller - 1);
 
   if (!game_controller) {
     lprintf(LO_ERROR, "dsda_InitGameController: error opening game controller %d\n",
@@ -228,5 +228,5 @@ void dsda_InitGameController(void) {
     return;
   }
 
-  lprintf(LO_DEBUG, "Opened game controller %s\n", SDL_GameControllerName(game_controller));
+  lprintf(LO_DEBUG, "Opened game controller %s\n", SDL_JoystickName(SDL_JoystickIndex(game_controller)));
 }

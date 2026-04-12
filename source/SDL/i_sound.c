@@ -240,8 +240,7 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
       return NULL;
     }
 
-    if (sample.channels != 1 || sample.freq != snd_samplerate
-        || SDL_AUDIO_ISFLOAT(sample.format))
+    if (sample.channels != 1 || sample.freq != snd_samplerate)
     {
       if (ConvertAudioFormat(&sampledata, &sample, &samplelen) == NULL)
       {
@@ -892,8 +891,7 @@ void I_InitSound(void)
   audio_channels = 2;
   audio_buffers = getSliceSize();
 
-  if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
-                          NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
+  if (Mix_OpenAudio(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers) < 0)
   {
     lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
     nosfxparm = true;
@@ -1249,7 +1247,8 @@ int I_RegisterSong(const void *data, size_t len)
   rwops_stream = SDL_RWFromConstMem(data, len);
   if (rwops_stream)
   {
-    music[0] = Mix_LoadMUS_RW(rwops_stream, SDL_FALSE);
+    // not sure how to set freesrc here
+    music[0] = Mix_LoadMUS_RW(rwops_stream);
   }
 
   // Failed to load

@@ -44,8 +44,7 @@
 #include "v_video.h"
 #include <SDL/SDL.h>
 
-extern SDL_Window *sdl_window;
-extern SDL_Renderer *sdl_renderer;
+extern SDL_Surface *sdl_renderer;
 
 extern SDL_Rect renderer_rect;
 extern SDL_Rect window_rect;

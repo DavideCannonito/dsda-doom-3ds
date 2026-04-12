@@ -32,7 +32,6 @@
  *-----------------------------------------------------------------------------
  */
 
-#include <SDL/SDL_render.h>
 #include <SDL/SDL_video.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -116,12 +115,17 @@ extern const int gl_depthbuffer_bits;
 extern void M_QuitDOOM(int choice);
 int desired_fullscreen;
 int exclusive_fullscreen;
+
+// software rendering canvas 8bpp
 SDL_Surface *screen;
+
+// buffer from SDL_Surface* screen, for RGB format conversion shenanigans
 static SDL_Surface *buffer;
-SDL_Window *sdl_window;
-SDL_Renderer *sdl_renderer;
-SDL_Texture *sdl_texture;
-static SDL_GLContext sdl_glcontext;
+// surface to render the final frame (does this handle status bar and the likes?)
+SDL_Surface *sdl_renderer;
+// intermediate surface
+SDL_Surface *sdl_texture;
+// static SDL_GLContext sdl_glcontext;
 unsigned int windowid = 0;
 SDL_Rect src_rect = { 0, 0, 0, 0 };       // Drawn pixels, independent of window size
 SDL_Rect window_rect = { 0, 0, 0, 0 };    // Physical window
@@ -167,7 +171,7 @@ int mouse_hide_timer = 0;
 }
 
 // Map keys like vanilla doom
-static int VanillaTranslateKey(SDL_Keysym* key)
+static int VanillaTranslateKey(SDL_keysym* key)
 {
   static const int scancode_map[] = SCANCODE_TO_KEYS_ARRAY;
   int rc = 0, sc = key->scancode;
@@ -180,18 +184,18 @@ static int VanillaTranslateKey(SDL_Keysym* key)
     return rc;
 
   switch (sc) { // Code (Ctrl/Shift/Alt) from scancode.
-    case SDL_SCANCODE_LSHIFT:
-    case SDL_SCANCODE_RSHIFT:
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
       return KEYD_RSHIFT;
 
-    case SDL_SCANCODE_LCTRL:
-    case SDL_SCANCODE_RCTRL:
+    case SDLK_LCTRL:
+    case SDLK_RCTRL:
       return KEYD_RCTRL;
 
-    case SDL_SCANCODE_LALT:
-    case SDL_SCANCODE_RALT:
-    case SDL_SCANCODE_LGUI:
-    case SDL_SCANCODE_RGUI:
+    case SDLK_LALT:
+    case SDLK_RALT:
+    case SDLK_LMETA:
+    case SDLK_RMETA:
       return KEYD_RALT;
 
     // Default to the symbolic key (outside of vanilla keys)
@@ -204,7 +208,7 @@ static int VanillaTranslateKey(SDL_Keysym* key)
 //  Translates the key currently in key
 //
 
-static int I_TranslateKey(SDL_Keysym* key)
+static int I_TranslateKey(SDL_keysym* key)
 {
   int rc = 0;
 
@@ -241,16 +245,16 @@ static int I_TranslateKey(SDL_Keysym* key)
   case SDLK_PAUSE:  rc = KEYD_PAUSE;  break;
   case SDLK_EQUALS: rc = KEYD_EQUALS; break;
   case SDLK_MINUS:  rc = KEYD_MINUS;  break;
-  case SDLK_KP_0:  rc = KEYD_KEYPAD0;  break;
-  case SDLK_KP_1:  rc = KEYD_KEYPAD1;  break;
-  case SDLK_KP_2:  rc = KEYD_KEYPAD2;  break;
-  case SDLK_KP_3:  rc = KEYD_KEYPAD3;  break;
-  case SDLK_KP_4:  rc = KEYD_KEYPAD4;  break;
-  case SDLK_KP_5:  rc = KEYD_KEYPAD5;  break;
-  case SDLK_KP_6:  rc = KEYD_KEYPAD6;  break;
-  case SDLK_KP_7:  rc = KEYD_KEYPAD7;  break;
-  case SDLK_KP_8:  rc = KEYD_KEYPAD8;  break;
-  case SDLK_KP_9:  rc = KEYD_KEYPAD9;  break;
+  case SDLK_KP0:  rc = KEYD_KEYPAD0;  break;
+  case SDLK_KP1:  rc = KEYD_KEYPAD1;  break;
+  case SDLK_KP2:  rc = KEYD_KEYPAD2;  break;
+  case SDLK_KP3:  rc = KEYD_KEYPAD3;  break;
+  case SDLK_KP4:  rc = KEYD_KEYPAD4;  break;
+  case SDLK_KP5:  rc = KEYD_KEYPAD5;  break;
+  case SDLK_KP6:  rc = KEYD_KEYPAD6;  break;
+  case SDLK_KP7:  rc = KEYD_KEYPAD7;  break;
+  case SDLK_KP8:  rc = KEYD_KEYPAD8;  break;
+  case SDLK_KP9:  rc = KEYD_KEYPAD9;  break;
   case SDLK_KP_PLUS:  rc = KEYD_KEYPADPLUS; break;
   case SDLK_KP_MINUS: rc = KEYD_KEYPADMINUS;  break;
   case SDLK_KP_DIVIDE:  rc = KEYD_KEYPADDIVIDE; break;
@@ -262,12 +266,12 @@ static int I_TranslateKey(SDL_Keysym* key)
   case SDLK_LCTRL:
   case SDLK_RCTRL:  rc = KEYD_RCTRL;  break;
   case SDLK_LALT:
-  case SDLK_LGUI:
+  case SDLK_LMETA:
   case SDLK_RALT:
-  case SDLK_RGUI:  rc = KEYD_RALT;   break;
+  case SDLK_RMETA:  rc = KEYD_RALT;   break;
   case SDLK_CAPSLOCK: rc = KEYD_CAPSLOCK; break;
-  case SDLK_PRINTSCREEN: rc = KEYD_PRINTSC; break;
-  case SDLK_SCROLLLOCK: rc = KEYD_SCROLLLOCK; break;
+  case SDLK_PRINT: rc = KEYD_PRINTSC; break;
+  case SDLK_SCROLLOCK: rc = KEYD_SCROLLLOCK; break;
   default:    rc = key->sym;    break;
   }
 
@@ -310,17 +314,6 @@ static void I_GetEvent(void)
   {
     switch (Event->type) {
       case SDL_KEYDOWN:
-#ifdef __APPLE__
-        if (Event->key.keysym.mod & KMOD_GUI)
-        {
-          // Switch windowed<->fullscreen if pressed <Command-F>
-          if (Event->key.keysym.sym == SDLK_f)
-          {
-            V_ToggleFullscreen();
-            break;
-          }
-        }
-#else
         if (Event->key.keysym.mod & KMOD_LALT)
         {
           // Prevent executing action on Alt-Tab
@@ -341,7 +334,16 @@ static void I_GetEvent(void)
             break;
           }
         }
-#endif
+
+        if(Event->key.keysym.unicode!=0){
+          event.type = ev_text;
+          // the game doesn't really suppport UNICODE and even then, there are no accents to send
+          event.text = (char*)&Event->key.keysym.unicode;
+          D_PostEvent(&event);
+          break;
+        }
+
+
         event.type = ev_keydown;
         event.data1.i = I_TranslateKey(&Event->key.keysym);
         D_PostEvent(&event);
@@ -363,21 +365,15 @@ static void I_GetEvent(void)
           event.data1.i = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
           D_PostEvent(&event);
         }
-        break;
-
-      case SDL_MOUSEWHEEL:
+        // SDL 1.2 shenanigans
         if (mouse_enabled && window_focused)
         {
           int mouseb;
 
-          if (Event->wheel.y > 0)
+          if (Event->button.button==SDL_BUTTON_WHEELUP)
             mouseb = KEYD_MWHEELUP;
-          else if (Event->wheel.y < 0)
+          else if (Event->button.button==SDL_BUTTON_WHEELDOWN)
             mouseb = KEYD_MWHEELDOWN;
-          else if (Event->wheel.x < 0)
-            mouseb = KEYD_MWHEELLEFT;
-          else if (Event->wheel.x > 0)
-            mouseb = KEYD_MWHEELRIGHT;
           else
             mouseb = 0;
 
@@ -392,39 +388,32 @@ static void I_GetEvent(void)
             D_PostEvent(&event);
           }
         }
+      
         break;
 
-      case SDL_CONTROLLERBUTTONDOWN:
-      case SDL_CONTROLLERBUTTONUP:
+      case SDL_JOYBUTTONDOWN:
+      case SDL_JOYBUTTONUP:
         if (dsda_AllowGameController())
           dsda_PollGameControllerButtons();
         break;
-
-      case SDL_TEXTINPUT:
-        event.type = ev_text;
-        event.text = Event->text.text;
-        D_PostEvent(&event);
-        break;
-
-      case SDL_WINDOWEVENT:
-        if (Event->window.windowID == windowid)
-        {
-          switch (Event->window.event)
-          {
-          case SDL_WINDOWEVENT_FOCUS_GAINED:
-          case SDL_WINDOWEVENT_FOCUS_LOST:
-            UpdateFocus();
-            break;
-          case SDL_WINDOWEVENT_SIZE_CHANGED:
-            ApplyWindowResize(Event);
-            break;
-          }
+      
+      case SDL_ACTIVEEVENT:
+        if(Event->active.gain>=0){
+          UpdateFocus();
+          break;
         }
+      // probably useless
+      break;
+
+      case SDL_VIDEORESIZE:
+      // what does this internally do?
+        ApplyWindowResize(Event);        
         break;
 
       case SDL_QUIT:
         S_StartVoidSound(sfx_swtchn);
         M_QuitDOOM(0);
+        break;
 
       default:
         break;
@@ -543,8 +532,8 @@ static void I_UploadNewPalette(int pal, int force)
     I_Error("I_UploadNewPalette: Palette number out of range (%d>=%d)",
       pal, num_pals);
 #endif
-
-  SDL_SetPaletteColors(screen->format->palette, playpal_data->colours + 256 * pal, 0, 256);
+  // TODO: i have no idea how SDL_LOGPAL and SDL_PHYSPAL affect things
+  SDL_SetPalette(sdl_renderer, (SDL_LOGPAL|SDL_PHYSPAL), playpal_data->colours + 256 * pal, 0, 256);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -589,7 +578,7 @@ void I_HandleCapture(void)
 //
 static int newpal = 0;
 #define NO_PALETTE_CHANGE 1000
-
+// TODO: FIX BLITTING LOGIC, SURFACES MIGHT NOT BE CORRECT
 void I_FinishUpdate (void)
 {
   if (V_IsOpenGLMode()) {
@@ -632,18 +621,17 @@ void I_FinishUpdate (void)
   // 32-bit RGBA buffer that we can load into the texture.
   SDL_LowerBlit(screen, &src_rect, buffer, &src_rect);
 
-  // Update the intermediate texture with the contents of the RGBA buffer.
-  SDL_UpdateTexture(sdl_texture, &src_rect, buffer->pixels, buffer->pitch);
 
   // Make sure the pillarboxes are kept clear each frame.
-  SDL_RenderClear(sdl_renderer);
+  SDL_FillRect(screen, NULL, 0);
 
-  SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, NULL);
+  // Update the intermediate texture with the contents of the RGBA buffer.
+  SDL_BlitSurface(buffer, NULL, sdl_texture, NULL);
 
   I_HandleCapture();
-
+  SDL_FillRect(sdl_renderer,NULL,0);
   // Draw!
-  SDL_RenderPresent(sdl_renderer);
+  SDL_Flip(sdl_renderer);
 }
 
 //
@@ -662,12 +650,11 @@ void I_SetPalette (int pal)
 
 static void I_ShutdownSDL(void)
 {
-  if (sdl_glcontext) SDL_GL_DeleteContext(sdl_glcontext);
+  // if (sdl_glcontext) SDL_GL_DeleteContext(sdl_glcontext);
   if (screen) SDL_FreeSurface(screen);
   if (buffer) SDL_FreeSurface(buffer);
-  if (sdl_texture) SDL_DestroyTexture(sdl_texture);
-  if (sdl_renderer) SDL_DestroyRenderer(sdl_renderer);
-  if (sdl_window) SDL_DestroyWindow(sdl_window);
+  if (sdl_texture) SDL_FreeSurface(sdl_texture);
+  if (sdl_renderer) SDL_FreeSurface(sdl_renderer);
 
   SDL_Quit();
   return;
@@ -748,7 +735,7 @@ static int cmp_resolutions (const void *a, const void *b)
     return (wa == wb) ? ha - hb : wa - wb;
 }
 
-static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_index, int *list_size)
+static void I_AppendResolution(SDL_Rect* mode, int *current_resolution_index, int *list_size)
 {
   int i;
   char mode_name[256];
@@ -768,116 +755,29 @@ static void I_AppendResolution(SDL_DisplayMode *mode, int *current_resolution_in
   (*list_size)++;
 }
 
+// does nothing
 static void I_AppendCustomResolution(int *current_resolution_index, int *list_size)
 {
-  const char *custom_resolution;
+  // const char *custom_resolution;
 
-  custom_resolution = dsda_StringConfig(dsda_config_custom_resolution);
+  // custom_resolution = dsda_StringConfig(dsda_config_custom_resolution);
 
-  if (strlen(custom_resolution))
-  {
-    SDL_DisplayMode mode;
+  // if (strlen(custom_resolution))
+  // {
+  //   SDL_DisplayMode mode;
 
-    if (sscanf(custom_resolution, "%4dx%4d", &mode.w, &mode.h) == 2)
-    {
-      I_AppendResolution(&mode, current_resolution_index, list_size);
-    }
-  }
+  //   if (sscanf(custom_resolution, "%4dx%4d", &mode.w, &mode.h) == 2)
+  //   {
+  //     I_AppendResolution(&mode, current_resolution_index, list_size);
+  //   }
+  // }
 }
 
-//
-// I_FillScreenResolutionsList
-// Get all the supported screen resolutions
-// and fill the list with them
-//
-static void I_FillScreenResolutionsList(void)
-{
-  int display_index = 0;
-  SDL_DisplayMode mode;
-  int i, list_size, current_resolution_index, count;
-  char desired_resolution[256];
-
-  // do it only once
-  if (screen_resolutions_list[0])
-  {
-    return;
-  }
-
-  if (desired_screenwidth == 0 || desired_screenheight == 0)
-  {
-    I_GetScreenResolution();
-  }
-
-  // Don't call SDL_ListModes if SDL has not been initialized
-  count = 0;
-  if (!nodrawers)
-    count = SDL_GetNumDisplayModes(display_index);
-
-  list_size = 0;
-  current_resolution_index = -1;
-
-  // on success, SDL_GetNumDisplayModes() always returns at least 1
-  if (count > 0)
-  {
-    // -2 for the desired resolution and for NULL
-    count = MIN(count, MAX_RESOLUTIONS_COUNT - 2 - num_canonicals);
-
-    for(i = count - 1 + num_canonicals; i >= 0; i--)
-    {
-      // make sure the canonical resolutions are always available
-      if (i > count - 1)
-      {
-        // no hard-coded resolutions for mode-changing fullscreen
-        if (exclusive_fullscreen)
-          continue;
-
-        mode.w = canonicals[i - count].w;
-        mode.h = canonicals[i - count].h;
-      }
-      else
-      {
-        SDL_GetDisplayMode(display_index, i, &mode);
-      }
-
-      I_AppendResolution(&mode, &current_resolution_index, &list_size);
-    }
-
-    I_AppendCustomResolution(&current_resolution_index, &list_size);
-
-    screen_resolutions_list[list_size] = NULL;
-  }
-
-  snprintf(desired_resolution, sizeof(desired_resolution), "%dx%d", desired_screenwidth, desired_screenheight);
-
-  // [FG] if the desired resolution not in the list, append it
-  if (current_resolution_index == -1)
-  {
-    screen_resolutions_list[list_size] = Z_Strdup(desired_resolution);
-    list_size++;
-  }
-
-  // [FG] sort the list
-  SDL_qsort(screen_resolutions_list, list_size, sizeof(*screen_resolutions_list), cmp_resolutions);
-
-  // [FG] find the desired resolution again
-  for (i = 0; i < list_size; i++)
-  {
-    if (!strcmp(desired_resolution, screen_resolutions_list[i]))
-    {
-      current_resolution_index = i;
-      break;
-    }
-  }
-
-  screen_resolutions_list[list_size] = NULL;
-  // This code is inside of the onUpdate for screen resolution, so it must avoid recursion
-  {
-    const char* dsda_HackStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist);
-
-    dsda_HackStringConfig(dsda_config_screen_resolution,
-                          screen_resolutions_list[current_resolution_index], false);
-  }
+// Hardcode to 400x240
+static void I_FillScreenResolutionsList(void){
+  screen_resolutions_list[0]=Z_Strdup("400x240");
 }
+
 
 // e6y
 // It is a simple test of CPU cache misses.
@@ -999,7 +899,7 @@ void I_InitScreenResolution(void)
   char c, x;
   dsda_arg_t *arg;
   video_mode_t mode;
-  int init = (sdl_window == NULL);
+  int init = 1;
 
   I_GetScreenResolution();
 
@@ -1092,7 +992,7 @@ void I_InitScreenResolution(void)
 
 void I_SetWindowCaption(void)
 {
-  SDL_SetWindowTitle(NULL, PROJECT_NAME " " PROJECT_VERSION);
+  // SDL_SetWindowTitle(NULL, PROJECT_NAME " " PROJECT_VERSION);
 }
 
 //
@@ -1115,7 +1015,7 @@ void I_SetWindowIcon(void)
 
   if (surface)
   {
-    SDL_SetWindowIcon(NULL, surface);
+    // SDL_SetWindowIcon(NULL, surface);
   }
 }
 
@@ -1147,6 +1047,7 @@ void I_InitGraphics(void)
     UpdateGrab();
   }
 }
+
 /* TODO:
  - [X] Set correct color palette for 3DS' top screen
  - [ ] Add hardware acceleration with citro3d
@@ -1154,7 +1055,8 @@ void I_InitGraphics(void)
 */
 void I_UpdateVideoMode(void)
 {
-  int init_flags = SDL_WINDOW_ALLOW_HIGHDPI;
+  int init_flags = SDL_HWPALETTE;
+  int screen_flags = init_flags|(SDL_TOPSCR|SDL_CONSOLEBOTTOM);
   int screen_multiply;
   int render_vsync;
   int integer_scaling;
@@ -1172,39 +1074,6 @@ void I_UpdateVideoMode(void)
   screen_multiply = dsda_IntConfig(dsda_config_render_screen_multiply);
   integer_scaling = dsda_IntConfig(dsda_config_integer_scaling);
 
-  if(sdl_window)
-  {
-    // video capturing cannot be continued with new screen settings
-    I_CaptureFinish();
-
-    if (V_IsOpenGLMode())
-    {
-      gld_CleanMemory();
-      gld_CleanStaticMemory();
-    }
-
-    I_InitScreenResolution();
-
-    if (sdl_glcontext) SDL_GL_DeleteContext(sdl_glcontext);
-    if (screen) SDL_FreeSurface(screen);
-    if (buffer) SDL_FreeSurface(buffer);
-    if (sdl_texture) SDL_DestroyTexture(sdl_texture);
-    if (sdl_renderer) SDL_DestroyRenderer(sdl_renderer);
-    SDL_DestroyWindow(sdl_window);
-
-    sdl_renderer = NULL;
-    sdl_window = NULL;
-    sdl_glcontext = NULL;
-    screen = NULL;
-    buffer = NULL;
-    sdl_texture = NULL;
-  }
-
-  // Initialize SDL with this graphics mode
-  if (V_IsOpenGLMode()) {
-    init_flags |= SDL_WINDOW_OPENGL;
-  }
-
   // [FG] aspect ratio correction for the canonical video modes
   if ((SCREENHEIGHT == 200 || SCREENHEIGHT == 400) && dsda_IntConfig(dsda_config_aspect_ratio_correction))
   {
@@ -1215,118 +1084,16 @@ void I_UpdateVideoMode(void)
     ACTUALHEIGHT = SCREENHEIGHT;
   }
 
-  x = SDL_WINDOWPOS_CENTERED_DISPLAY(sdl_video_display_index);
-  y = SDL_WINDOWPOS_CENTERED_DISPLAY(sdl_video_display_index);
-  if (sdl_video_window_pos)
-  {
-    int nx, ny;
-    if (sscanf(sdl_video_window_pos, "%d,%d", &nx, &ny) == 2)
-    {
-      x = nx;
-      y = ny;
-    }
-  }
-
-  if (desired_fullscreen)
-  {
-    if (exclusive_fullscreen)
-      init_flags |= SDL_WINDOW_FULLSCREEN;
-    else
-      init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-  }
-
-  if (V_IsOpenGLMode())
-  {
-    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_GREEN_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_BLUE_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_ACCUM_ALPHA_SIZE, 0 );
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-    SDL_GL_SetAttribute( SDL_GL_BUFFER_SIZE, gl_colorbuffer_bits );
-    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, gl_depthbuffer_bits );
-    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
-
-    //e6y: anti-aliasing
-    gld_MultisamplingInit();
-
-    sdl_window = SDL_CreateWindow(
-      PROJECT_NAME " " PROJECT_VERSION,
-      x, y,
-      SCREENWIDTH * screen_multiply, ACTUALHEIGHT * screen_multiply,
-      init_flags);
-    sdl_glcontext = SDL_GL_CreateContext(sdl_window);
-    SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, ACTUALHEIGHT);
-  }
-  else
-  {
-    int flags = SDL_RENDERER_TARGETTEXTURE;
-
-    if (render_vsync)
-      flags |= SDL_RENDERER_PRESENTVSYNC;
-
-    sdl_window = SDL_CreateWindow(
-      PROJECT_NAME " " PROJECT_VERSION,
-      x, y,
-      SCREENWIDTH * screen_multiply, ACTUALHEIGHT * screen_multiply,
-      init_flags);
-    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, flags);
-
-    SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, ACTUALHEIGHT);
-    SDL_RenderSetLogicalSize(sdl_renderer, SCREENWIDTH, ACTUALHEIGHT);
-
-    // [FG] force integer scales
-    SDL_RenderSetIntegerScale(sdl_renderer, integer_scaling);
-
-    screen = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 8, 0, 0, 0, 0);
-    buffer = SDL_CreateRGBSurfaceWithFormat(0, SCREENWIDTH, SCREENHEIGHT, 32,SDL_PIXELFORMAT_RGB565);
-    SDL_FillRect(buffer, NULL, 0);
-
-    sdl_texture = SDL_CreateTextureFromSurface(sdl_renderer, buffer);
-
-    if(screen == NULL) {
+  sdl_renderer = SDL_SetVideoMode(SCREENWIDTH, ACTUALHEIGHT,32,screen_flags);
+  // why is the bitmask all 0?
+  screen = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 8, 0, 0, 0, 0);
+  
+  // WARN: VIBE CODED BITMASKS
+  buffer = SDL_CreateRGBSurface(init_flags, SCREENWIDTH, ACTUALHEIGHT, 32, 0xF800, 0x07E0,0x001F,0x0000);
+  SDL_FillRect(buffer, NULL, 0);
+  sdl_texture=SDL_CreateRGBSurfaceFrom(sdl_renderer->pixels, sdl_renderer->w, sdl_renderer->h, sdl_renderer->format->BitsPerPixel, sdl_renderer->pitch, sdl_renderer->format->Rmask, sdl_renderer->format->Gmask, sdl_renderer->format->Bmask, sdl_renderer->format->Amask);
+  if(screen == NULL) {
       I_Error("Couldn't set %dx%d video mode [%s]", SCREENWIDTH, SCREENHEIGHT, SDL_GetError());
-    }
-  }
-
-  // When creating the window, its not allowed to set a position in a different display
-  // This allows that
-  SDL_SetWindowPosition(sdl_window, x, y);
-
-
-  if (desired_fullscreen)
-  {
-    if (exclusive_fullscreen)
-      SDL_SetWindowFullscreen(sdl_window, SDL_WINDOW_FULLSCREEN);
-    else
-      SDL_SetWindowFullscreen(sdl_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-  }
-  else
-  {
-    SDL_SetWindowResizable(sdl_window, SDL_TRUE);
-  }
-
-  // Workaround for SDL 2.0.14 alt-tab bug (taken from Doom Retro)
-#if defined(_WIN32)
-  {
-     SDL_version ver;
-     SDL_GetVersion(&ver);
-     if (ver.major == 2 && ver.minor == 0 && (ver.patch == 14 || ver.patch == 16))
-     {
-        SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "1", SDL_HINT_OVERRIDE);
-     }
-  }
-#endif
-
-  windowid = SDL_GetWindowID(sdl_window);
-
-  if (V_IsOpenGLMode())
-  {
-    SDL_GL_SetSwapInterval((render_vsync ? 1 : 0));
   }
 
   if (V_IsSoftwareMode())
@@ -1412,14 +1179,14 @@ void I_UpdateVideoMode(void)
 
 static void ActivateMouse(void)
 {
-  SDL_SetRelativeMouseMode(SDL_TRUE);
+  // SDL_SetRelativeMouseMode(SDL_TRUE);
   SDL_GetRelativeMouseState(NULL, NULL);
 }
 
 static void DeactivateMouse(void)
 {
   SDL_ShowCursor(SDL_ENABLE);
-  SDL_SetRelativeMouseMode(SDL_FALSE);
+  // SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
 // Interpolates mouse input to mitigate stuttering
@@ -1534,48 +1301,12 @@ static dboolean MouseShouldBeGrabbed()
 // and we dont move the mouse around if we aren't focused either.
 static void UpdateFocus(void)
 {
-  Uint32 flags = 0;
 
-  window_focused = false;
-  if(sdl_window)
-  {
-    flags = SDL_GetWindowFlags(sdl_window);
-    if ((flags & SDL_WINDOW_SHOWN) && !(flags & SDL_WINDOW_MINIMIZED) && (flags & SDL_WINDOW_INPUT_FOCUS))
-    {
-      window_focused = true;
-    }
-  }
-
-  // e6y
-  // Reuse of a current palette to avoid black screen at software fullscreen modes
-  // after switching to OS and back
-  if (desired_fullscreen && window_focused)
-  {
-    V_TouchPalette();
-  }
-
-  S_ResetVolume();
 }
 
 void UpdateGrab(void)
 {
-  static dboolean currently_grabbed = false;
-  dboolean grab;
-
-  grab = MouseShouldBeGrabbed();
-
-  if (grab)
-  {
-    if (!currently_grabbed)
-      ActivateMouse();
-
-    if (!demoplayback || walkcamera.type)
-      SDL_WarpMouseInWindow(sdl_window, window_rect.w / 2, window_rect.h / 2);
-  }
-  else if (currently_grabbed)
-    DeactivateMouse();
-
-  currently_grabbed = grab;
+  
 }
 
 static void ApplyWindowResize(SDL_Event *resize_event)
@@ -1583,7 +1314,7 @@ static void ApplyWindowResize(SDL_Event *resize_event)
   I_SetWindowRect();
   I_SetViewportRect();
 
-  if (!V_IsOpenGLMode() || !sdl_window)
+  if (!V_IsOpenGLMode())
     return;
 
   dsda_GLSetRenderViewportParams();
@@ -1591,12 +1322,6 @@ static void ApplyWindowResize(SDL_Event *resize_event)
 
 void I_SetWindowRect()
 {
-  SDL_GetWindowSize(sdl_window, &window_rect.w, &window_rect.h);
-
-  if (V_IsOpenGLMode())
-    SDL_GL_GetDrawableSize(sdl_window, &renderer_rect.w, &renderer_rect.h);
-  else
-    SDL_GetRendererOutputSize(sdl_renderer, &renderer_rect.w, &renderer_rect.h);
 }
 
 void I_SetViewportRect()
