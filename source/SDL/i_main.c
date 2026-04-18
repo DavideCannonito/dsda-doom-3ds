@@ -272,8 +272,7 @@ void I_SetProcessPriority(void)
 int main(int argc, char **argv)
 {
   gfxInitDefault();
-  consoleInit(GFX_BOTTOM, NULL);
-
+  consoleInit(GFX_BOTTOM,NULL);
   setenv("TIMIDITY_CFG", "sdmc:/etc/timidity.cfg", 1);
   
   // these will be passed to parse the command line args.
@@ -359,6 +358,10 @@ int main(int argc, char **argv)
   I_SetProcessPriority();
   /* cphipps - call to video specific startup code */
   I_PreInitGraphics();
+
+  // gfxInitDefault();
+  // HACK: i dont know any better way to do this
+  consoleInit(GFX_BOTTOM,NULL);
 
   D_DoomMain ();
   return 0;

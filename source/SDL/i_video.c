@@ -118,14 +118,10 @@ int exclusive_fullscreen;
 
 // software rendering canvas 8bpp
 SDL_Surface *screen;
-
 // buffer from SDL_Surface* screen, for RGB format conversion shenanigans
 static SDL_Surface *buffer;
-// surface to render the final frame (does this handle status bar and the likes?)
+// surface to render the final frame
 SDL_Surface *sdl_renderer;
-// intermediate surface
-SDL_Surface *sdl_texture;
-// static SDL_GLContext sdl_glcontext;
 unsigned int windowid = 0;
 SDL_Rect src_rect = { 0, 0, 0, 0 };       // Drawn pixels, independent of window size
 SDL_Rect window_rect = { 0, 0, 0, 0 };    // Physical window
@@ -137,7 +133,7 @@ SDL_Rect viewport_rect = { 0, 0, 0, 0 };  // The renderer, but without the black
 int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
-static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
+static dboolean mouse_enabled=0; // usemouse, but can be overriden by -nomouse
 int mouse_hide_timer = 0;
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +526,7 @@ static void I_UploadNewPalette(int pal, int force)
       pal, num_pals);
 #endif
   // TODO: i have no idea how SDL_LOGPAL and SDL_PHYSPAL affect things
-  SDL_SetPalette(sdl_renderer, (SDL_LOGPAL|SDL_PHYSPAL), playpal_data->colours + 256 * pal, 0, 256);
+SDL_SetColors(screen, playpal_data->colours + 256 * pal, 0, 256);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -680,11 +676,9 @@ void I_FinishUpdate (void)
   SDL_FillRect(sdl_renderer, NULL, 0);
 
   // Update the intermediate texture with the contents of the RGBA buffer.
-  SDL_BlitSurface(buffer, NULL, sdl_texture, NULL);
+  SDL_BlitSurface(screen, NULL, sdl_renderer, NULL);
   
   I_HandleCapture();
-  // i could probably get away with this other blit
-  SDL_BlitSurface(sdl_texture, NULL, sdl_renderer, NULL);
   // Draw!
   SDL_Flip(sdl_renderer);
 }
@@ -708,7 +702,6 @@ static void I_ShutdownSDL(void)
   // if (sdl_glcontext) SDL_GL_DeleteContext(sdl_glcontext);
   if (screen) SDL_FreeSurface(screen);
   if (buffer) SDL_FreeSurface(buffer);
-  if (sdl_texture) SDL_FreeSurface(sdl_texture);
   if (sdl_renderer) SDL_FreeSurface(sdl_renderer);
 
   SDL_Quit();
@@ -1104,7 +1097,7 @@ void I_InitGraphics(void)
 */
 void I_UpdateVideoMode(void)
 {
-  int init_flags = SDL_SWSURFACE;
+  int init_flags = SDL_HWSURFACE;
   int screen_flags = init_flags|(SDL_TOPSCR|SDL_CONSOLEBOTTOM);
   int screen_multiply;
   int render_vsync;
@@ -1133,15 +1126,18 @@ void I_UpdateVideoMode(void)
     ACTUALHEIGHT = SCREENHEIGHT;
   }
 
-  sdl_renderer = SDL_SetVideoMode(SCREENWIDTH, ACTUALHEIGHT,32,screen_flags);
+  sdl_renderer = SDL_SetVideoMode(desired_screenwidth, desired_screenheight,16,screen_flags);
+
+  // the game will fully be controlled by joystick
+  SDL_ShowCursor(SDL_DISABLE);
+
   // why is the bitmask all 0?
   screen = SDL_CreateRGBSurface(0, SCREENWIDTH, SCREENHEIGHT, 8, 0, 0, 0, 0);
   
   // WARN: VIBE CODED BITMASKS
-  buffer = SDL_CreateRGBSurface(init_flags, SCREENWIDTH, ACTUALHEIGHT, 32, 0xF800, 0x07E0,0x001F,0x0000);
+  buffer = SDL_CreateRGBSurface(init_flags, SCREENWIDTH, ACTUALHEIGHT, 16, 0xF800, 0x07E0,0x001F,0x0000);
   SDL_FillRect(buffer, NULL, 0);
-  sdl_texture=SDL_CreateRGBSurfaceFrom(sdl_renderer->pixels, sdl_renderer->w, sdl_renderer->h, sdl_renderer->format->BitsPerPixel, sdl_renderer->pitch, sdl_renderer->format->Rmask, sdl_renderer->format->Gmask, sdl_renderer->format->Bmask, sdl_renderer->format->Amask);
-  if(screen == NULL) {
+   if(screen == NULL) {
       I_Error("Couldn't set %dx%d video mode [%s]", SCREENWIDTH, SCREENHEIGHT, SDL_GetError());
   }
 
