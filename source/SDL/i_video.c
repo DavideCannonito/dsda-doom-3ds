@@ -79,7 +79,7 @@
 #include "g_game.h"
 #include "lprintf.h"
 #include "i_system.h"
-#include "gl_struct.h"
+// #include "gl_struct.h"
 
 #include "e6y.h"//e6y
 #include "i_main.h"
@@ -490,9 +490,6 @@ static void I_UploadNewPalette(int pal, int force)
   static size_t num_pals;
   dsda_playpal_t* playpal_data;
 
-  if (V_IsOpenGLMode())
-    return;
-
   playpal_data = dsda_PlayPalData();
 
   if ((playpal_data->colours == NULL) || (cachedgamma != usegamma) || force) {
@@ -573,6 +570,69 @@ void I_HandleCapture(void)
   }
 }
 
+// //
+// // I_FinishUpdate SDL 2 VERSION
+// //
+// static int newpal = 0;
+// #define NO_PALETTE_CHANGE 1000
+
+// void I_FinishUpdate (void)
+// {
+//   if (V_IsOpenGLMode()) {
+//     // proff 04/05/2000: swap OpenGL buffers
+//     gld_Finish();
+//     return;
+//   }
+
+//   if (SDL_MUSTLOCK(screen)) {
+//       int h;
+//       byte *src;
+//       byte *dest;
+
+//       if (SDL_LockSurface(screen) < 0) {
+//         lprintf(LO_INFO,"I_FinishUpdate: %s\n", SDL_GetError());
+//         return;
+//       }
+
+//       dest=(byte*)screen->pixels;
+//       src=screens[0].data;
+//       h=screen->h;
+//       for (; h>0; h--)
+//       {
+//         memcpy(dest,src,SCREENWIDTH); //e6y
+//         dest+=screen->pitch;
+//         src+=screens[0].pitch;
+//       }
+
+//       SDL_UnlockSurface(screen);
+//   }
+
+//   /* Update the display buffer (flipping video pages if supported)
+//    * If we need to change palette, that implicitely does a flip */
+//   if (newpal != NO_PALETTE_CHANGE) {
+//     I_UploadNewPalette(newpal, false);
+//     newpal = NO_PALETTE_CHANGE;
+//   }
+
+//   // Blit from the paletted 8-bit screen buffer to the intermediate
+//   // 32-bit RGBA buffer that we can load into the texture.
+//   SDL_LowerBlit(screen, &src_rect, buffer, &src_rect);
+
+//   // Update the intermediate texture with the contents of the RGBA buffer.
+//   SDL_UpdateTexture(sdl_texture, &src_rect, buffer->pixels, buffer->pitch);
+
+//   // Make sure the pillarboxes are kept clear each frame.
+//   SDL_RenderClear(sdl_renderer);
+
+//   SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, NULL);
+
+//   I_HandleCapture();
+
+//   // Draw!
+//   SDL_RenderPresent(sdl_renderer);
+// }
+
+
 //
 // I_FinishUpdate
 //
@@ -581,12 +641,6 @@ static int newpal = 0;
 // TODO: FIX BLITTING LOGIC, SURFACES MIGHT NOT BE CORRECT
 void I_FinishUpdate (void)
 {
-  if (V_IsOpenGLMode()) {
-    // proff 04/05/2000: swap OpenGL buffers
-    gld_Finish();
-    return;
-  }
-
   if (SDL_MUSTLOCK(screen)) {
       int h;
       byte *src;
@@ -623,13 +677,14 @@ void I_FinishUpdate (void)
 
 
   // Make sure the pillarboxes are kept clear each frame.
-  SDL_FillRect(screen, NULL, 0);
+  SDL_FillRect(sdl_renderer, NULL, 0);
 
   // Update the intermediate texture with the contents of the RGBA buffer.
   SDL_BlitSurface(buffer, NULL, sdl_texture, NULL);
-
+  
   I_HandleCapture();
-  SDL_FillRect(sdl_renderer,NULL,0);
+  // i could probably get away with this other blit
+  SDL_BlitSurface(sdl_texture, NULL, sdl_renderer, NULL);
   // Draw!
   SDL_Flip(sdl_renderer);
 }
@@ -820,12 +875,6 @@ void I_CalculateRes(int width, int height)
   SCREENWIDTH = width;
   SCREENHEIGHT = height;
 
-  if (V_IsOpenGLMode())
-  {
-    SCREENPITCH = SCREENWIDTH;
-  }
-  else
-  {
     unsigned int count1, count2;
     int pitch1, pitch2;
 
@@ -856,7 +905,7 @@ void I_CalculateRes(int width, int height)
 
       lprintf(LO_DEBUG, " optimized screen pitch is %d\n", SCREENPITCH);
     }
-  }
+
 }
 
 static video_mode_t I_GetModeFromString(const char *modestr)
@@ -1055,7 +1104,7 @@ void I_InitGraphics(void)
 */
 void I_UpdateVideoMode(void)
 {
-  int init_flags = SDL_HWPALETTE;
+  int init_flags = SDL_SWSURFACE;
   int screen_flags = init_flags|(SDL_TOPSCR|SDL_CONSOLEBOTTOM);
   int screen_multiply;
   int render_vsync;
@@ -1124,54 +1173,8 @@ void I_UpdateVideoMode(void)
   V_SetPalette(0);
   I_UploadNewPalette(0, true);
 
-  if (V_IsOpenGLMode())
-  {
-    int temp;
-    lprintf(LO_DEBUG, "SDL OpenGL PixelFormat:\n");
-    SDL_GL_GetAttribute( SDL_GL_RED_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_RED_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_GREEN_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_GREEN_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_BLUE_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_BLUE_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_STENCIL_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_STENCIL_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_ACCUM_RED_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_RED_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_ACCUM_GREEN_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_GREEN_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_ACCUM_BLUE_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_BLUE_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_ACCUM_ALPHA_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_ALPHA_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_DOUBLEBUFFER, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_DOUBLEBUFFER: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_BUFFER_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_BUFFER_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_DEPTH_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_DEPTH_SIZE: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_MULTISAMPLESAMPLES, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_MULTISAMPLESAMPLES: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_MULTISAMPLEBUFFERS, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_MULTISAMPLEBUFFERS: %i\n",temp);
-    SDL_GL_GetAttribute( SDL_GL_STENCIL_SIZE, &temp );
-    lprintf(LO_DEBUG, "    SDL_GL_STENCIL_SIZE: %i\n",temp);
-
-    gld_Init(SCREENWIDTH, SCREENHEIGHT);
-  }
-
   ST_SetResolution();
   AM_SetResolution();
-
-  if (V_IsOpenGLMode())
-  {
-    M_ChangeFOV();
-    deh_changeCompTranslucency();
-
-    // elim - Sets up viewport sizing for render-to-texture scaling
-    dsda_GLSetRenderViewportParams();
-    dsda_GLSetRenderViewport();
-  }
 
   src_rect.w = SCREENWIDTH;
   src_rect.h = SCREENHEIGHT;

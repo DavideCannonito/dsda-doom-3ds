@@ -21,7 +21,7 @@
 #include "r_things.h"
 #include "w_wad.h"
 #include "g_game.h"
-#include "gl_struct.h"
+// #include "gl_struct.h"
 #include "lprintf.h"
 #include "i_main.h"
 #include "i_video.h"

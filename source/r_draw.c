@@ -568,10 +568,6 @@ void R_FillBackScreen (void)
         V_EndUIDraw();
         return;
       }
-
-      if (V_IsOpenGLMode()) // OpenGL has no way to adjust y-offset independent from height
-        V_FillFlat(grnrock.lumpnum, 1, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_STRETCH);
-      else
         V_FillFlat(grnrock.lumpnum, 1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, VPT_STRETCH);
 
       // heretic_note: I think this looks bad, so I'm skipping it...
@@ -608,12 +604,6 @@ static void R_CopyScreenBufferSection(int x, int y, int count)
 void R_DrawViewBorder(void)
 {
   int i;
-
-  if (V_IsOpenGLMode()) {
-    // proff 11/99: we don't have a backscreen in OpenGL from where we can copy this
-    R_FillBackScreen();
-    return;
-  }
 
   // e6y: wide-res
   if ((ratio_multiplier != ratio_scale || wide_offsety) && R_StatusBarVisible())

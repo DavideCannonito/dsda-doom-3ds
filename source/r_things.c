@@ -680,11 +680,6 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     return;
   }
 
-  if (V_IsOpenGLMode())
-  {
-    gld_ProjectSprite(thing, lightlevel);
-    return;
-  }
 
   if (R_ViewInterpolation())
   {
@@ -1280,7 +1275,6 @@ static void R_DrawPSprite (pspdef_t *psp)
       else if (lightlevel >= 255)
         lightlevel = 255;
     }
-    gld_DrawWeapon(lump,vis,lightlevel);
   }
 }
 

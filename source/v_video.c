@@ -688,11 +688,8 @@ void V_SetPalette(int pal)
 {
   currentPaletteIndex = pal;
 
-  if (V_IsOpenGLMode()) {
-    gld_SetPalette(pal);
-  } else {
     I_SetPalette(pal);
-  }
+
 }
 
 void V_SetPlayPal(int playpal_index)
@@ -701,10 +698,6 @@ void V_SetPlayPal(int playpal_index)
   R_UpdatePlayPal();
   V_SetPalette(currentPaletteIndex);
 
-  if (V_IsOpenGLMode())
-  {
-    gld_FlushTextures();
-  }
 }
 
 //
@@ -728,69 +721,56 @@ static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight);
 
 static void WRAP_gld_BeginUIDraw(void)
 {
-  gld_BeginUIDraw();
+
 }
 static void WRAP_gld_EndUIDraw(void)
 {
-  gld_EndUIDraw();
 }
 static void WRAP_gld_BeginAutomapDraw(void)
 {
-  gld_BeginAutomapDraw();
 }
 static void WRAP_gld_EndAutomapDraw(void)
 {
-  gld_EndAutomapDraw();
+
 }
 static void WRAP_gld_BeginMenuDraw(void)
 {
-  gld_BeginMenuDraw();
 }
 static void WRAP_gld_EndMenuDraw(void)
 {
-  gld_EndMenuDraw();
 }
 static void WRAP_gld_FillRect(int scrn, int x, int y, int width, int height, byte colour)
 {
-  gld_FillBlock(x,y,width,height,colour);
 }
 static void WRAP_gld_CopyRect(int srcscrn, int destscrn, int x, int y, int width, int height, enum patch_translation_e flags)
 {
 }
 static void WRAP_gld_DrawBackground(const char *flatname, int n)
 {
-  gld_FillFlatName(flatname, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_STRETCH);
+
 }
 static void WRAP_gld_FillFlat(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags)
 {
-  gld_FillFlat(lump, x, y, width, height, flags);
 }
 static void WRAP_gld_FillPatch(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags)
 {
-  gld_FillPatch(lump, x, y, width, height, flags);
 }
 static void WRAP_gld_DrawNumPatch(int x, int y, int scrn, int lump, dboolean center, int cm, enum patch_translation_e flags)
 {
-  gld_DrawNumPatch(x,y,lump,center,cm,flags);
 }
 static void WRAP_gld_DrawNumPatchPrecise(float x, float y, int scrn, int lump, dboolean center, int cm, enum patch_translation_e flags)
 {
-  gld_DrawNumPatch_f(x,y,lump,center,cm,flags);
 }
 static void V_PlotPixelGL(int scrn, int x, int y, byte color) {
-  gld_DrawLine(x-1, y, x+1, y, color);
-  gld_DrawLine(x, y-1, x, y+1, color);
 }
 static void V_PlotPixelWuGL(int scrn, int x, int y, byte color, int weight) {
   V_PlotPixelGL(scrn, x, y, color);
 }
 static void WRAP_gld_DrawLine(fline_t* fl, int color)
 {
-  gld_DrawLine_f(fl->a.fx, fl->a.fy, fl->b.fx, fl->b.fy, color);
 }
 static void WRAP_gld_DrawShaded(int scrn, int x, int y, int width, int height, int shade)
 {
-  gld_DrawShaded(x, y, width, height, shade);
 }
 
 static void NULL_BeginUIDraw(void) {}
@@ -894,15 +874,15 @@ dboolean V_IsOpenGLMode(void) {
 }
 
 dboolean V_IsUILightmodeIndexed(void) {
-  return gl_ui_lightmode_indexed;
+  return 0;
 }
 
 dboolean V_IsAutomapLightmodeIndexed(void) {
-  return gl_automap_lightmode_indexed;
+  return 0;
 }
 
 dboolean V_IsMenuLightmodeIndexed(void) {
-  return gl_menu_lightmode_indexed;
+  return 0;
 }
 
 void V_CopyScreen(int srcscrn, int destscrn)
@@ -1505,10 +1485,6 @@ void V_ChangeScreenResolution(void)
 {
   I_UpdateVideoMode();
 
-  if (V_IsOpenGLMode())
-  {
-    gld_PreprocessLevel();
-  }
 }
 
 void V_FillRectVPT(int scrn, int x, int y, int width, int height, byte color, enum patch_translation_e flags)
@@ -1583,14 +1559,6 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
 
   x_offset = (int)((SCREENWIDTH - (x_factor * lump_width)) / 2);
   y_offset = (int)((dest_y_offset * y_factor) - (source_offset * y_factor / lump_width));
-
-  // TODO: create a V_FillRaw alias and call that instead of the gld_ func directly,
-  // though that means there needs to be a software version too (that's ideally a
-  // bit more efficient than the current code's thousands-of-little-boxes approach)
-  if (V_IsOpenGLMode()) {
-    gld_FillRawName(lump_name, x_offset, y_offset, lump_width, 200, lump_width * x_factor, 200 * y_factor, VPT_STRETCH_REAL);
-    return;
-  }
 
   raw = (const byte *)W_LumpByName(lump_name) + source_offset;
 

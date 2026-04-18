@@ -18,8 +18,8 @@
 
 #include "render_scale.h"
 
-#include "gl_opengl.h"
-#include "gl_intern.h"
+// #include "gl_opengl.h"
+// #include "gl_intern.h"
 
 #include "i_video.h"
 #include "r_main.h"
@@ -117,23 +117,10 @@ void dsda_GLLetterboxClear() {
 }
 
 void dsda_GLStartMeltRenderTexture() {
-  if (!SceneInTexture)
-    return;
 
-  gld_InitDrawScene();
-  gld_StartDrawScene();
-  gld_Set2DMode();
-  glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
-  glScissor(0, 0, SCREENWIDTH, SCREENHEIGHT);
 }
 
 void dsda_GLEndMeltRenderTexture() {
-  if (!SceneInTexture)
-    return;
-
-  GLEXT_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-  glBindTexture(GL_TEXTURE_2D, glSceneImageTextureFBOTexID);
-
   dsda_GLFullscreenOrtho2D();
   dsda_GLSetRenderViewport();
   dsda_GLSetRenderViewportScissor();
@@ -146,8 +133,6 @@ void dsda_GLEndMeltRenderTexture() {
     glTexCoord2f(1.0f, 0.0f); glVertex2f((float)renderer_rect.w, (float)renderer_rect.h);
   }
   glEnd();
-
-  gld_Set2DMode();
   glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 }
 

@@ -43,7 +43,7 @@
 #include "v_video.h"
 #include "m_random.h"
 #include "f_wipe.h"
-#include "gl_struct.h"
+// #include "gl_struct.h"
 #include "e6y.h"//e6y
 
 #include "dsda/settings.h"
@@ -150,10 +150,7 @@ static int wipe_doMelt(int ticks)
       }
     }
   }
-  if (V_IsOpenGLMode())
-  {
-    gld_wipe_doMelt(ticks, y_lookup);
-  }
+
   return done;
 }
 
@@ -161,11 +158,7 @@ static int wipe_doMelt(int ticks)
 
 static int wipe_exitMelt(int ticks)
 {
-  if (V_IsOpenGLMode())
-  {
-    gld_wipe_exitMelt(ticks);
-    return 0;
-  }
+
 
   V_FreeScreen(&wipe_scr_start);
   wipe_scr_start.width = 0;
@@ -184,11 +177,6 @@ int wipe_StartScreen(void)
   if(dsda_PendingSkipWipe() || wasWiped) return 0;//e6y
   wasWiped = true;//e6y
 
-  if (V_IsOpenGLMode())
-  {
-    gld_wipe_StartScreen();
-    return 0;
-  }
 
   wipe_scr_start.width = SCREENWIDTH;
   wipe_scr_start.height = SCREENHEIGHT;
@@ -210,11 +198,6 @@ int wipe_EndScreen(void)
   if(dsda_PendingSkipWipe() || !wasWiped) return 0;//e6y
   wasWiped = false;//e6y
 
-  if (V_IsOpenGLMode())
-  {
-    gld_wipe_EndScreen();
-    return 0;
-  }
 
   wipe_scr_end.width = SCREENWIDTH;
   wipe_scr_end.height = SCREENHEIGHT;
