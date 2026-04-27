@@ -22,7 +22,7 @@ void I_GoSpinningLoop(void) {
   }
 }
 
-bool I_CheckN3DS() {
+bool I_CheckNew3DS() {
   bool check = false;
   APT_CheckNew3DS(&check);
   return check;

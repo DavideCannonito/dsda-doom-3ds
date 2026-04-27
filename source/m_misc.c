@@ -394,8 +394,6 @@ cfg_input_def_t input_defs_o3ds[] = {
   INPUT_SETTING("input_strafeleft", dsda_input_strafeleft, 'a', -1, -1),
   INPUT_SETTING("input_straferight", dsda_input_straferight, 'd', -1,-1 ),
   INPUT_SETTING("input_strafe", dsda_input_strafe, 0, 1,-1),
-  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, DSDA_CONTROLLER_BUTTON_LEFTSTICK),
-  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, DSDA_CONTROLLER_BUTTON_RIGHTSTICK),
   INPUT_SETTING("input_use", dsda_input_use, ' ', -1, DSDA_CONTROLLER_BUTTON_X),
   INPUT_SETTING("input_flyup", dsda_input_flyup, '.', -1, DSDA_CONTROLLER_BUTTON_DPAD_UP),
   INPUT_SETTING("input_flydown", dsda_input_flydown, ',', -1, DSDA_CONTROLLER_BUTTON_DPAD_DOWN),
@@ -586,8 +584,6 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_strafeleft", dsda_input_strafeleft, 'a', -1, -1),
   INPUT_SETTING("input_straferight", dsda_input_straferight, 'd', -1, -1),
   INPUT_SETTING("input_strafe", dsda_input_strafe, 0, 1, DSDA_CONTROLLER_BUTTON_LEFTSHOULDER),
-  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, DSDA_CONTROLLER_BUTTON_LEFTSTICK),
-  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, DSDA_CONTROLLER_BUTTON_RIGHTSTICK),
   INPUT_SETTING("input_use", dsda_input_use, ' ', -1, DSDA_CONTROLLER_BUTTON_A),
   INPUT_SETTING("input_flyup", dsda_input_flyup, '.', -1, DSDA_CONTROLLER_BUTTON_DPAD_UP),
   INPUT_SETTING("input_flydown", dsda_input_flydown, ',', -1, DSDA_CONTROLLER_BUTTON_DPAD_DOWN),
@@ -883,7 +879,7 @@ void M_LoadDefaults (void)
   dsda_InitConfig();
   // TODO: Make it overridable in-game.
   /* TODO: INVESTIGATE BETTER APPROACHES/MAKE IT CLEANER*/
-  bool setO3DS=!I_CheckN3DS();
+  bool setO3DS=!I_CheckNew3DS();
   for (i = 0; i < input_def_count; i++) {
     int c;
 

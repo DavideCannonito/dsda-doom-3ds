@@ -3,5 +3,5 @@
 #include <stdbool.h>
 void I_GoSpinningLoop(void);
 bool I_SystemLoop();
-bool I_CheckN3DS();
+bool I_CheckNew3DS();
 #endif
