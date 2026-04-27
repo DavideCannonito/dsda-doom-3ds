@@ -1,7 +1,5 @@
 #include "MUSIC/sdlmixerplayer.h"
-#include "lprintf.h"
 #include "musicplayer.h"
-#include "z_zone.h"
 #include <SDL/SDL_mixer.h>
 
 const music_player_t sdl_mixer_player = {
@@ -72,7 +70,7 @@ void sm_unregistersong(const void *handle) {
 }
 
 void sm_play(const void *handle, int looping) {
-  Mix_PlayMusic(player_state.music_handle, -1);
+  Mix_PlayMusic(player_state.music_handle, looping?-1:0);
 }
 
 // stop
