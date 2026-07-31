@@ -28,19 +28,52 @@ GFXBUILD    :=  $(ROMFS)/gfx
 #---------------------------------------------------------------------------------
 # OPZIONI DI GENERAZIONE CODICE
 #---------------------------------------------------------------------------------
-ARCH    :=  -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -mword-relocations
+ARCH := -march=armv6k \
+        -mtune=mpcore \
+        -mfloat-abi=hard \
+        -mtp=soft \
+        -mword-relocations
 
-CFLAGS  :=  -g -Wall -O3 \
-            -ffunction-sections \
-            $(ARCH)
+CFLAGS := \
+    -Ofast \
+    -flto \
+    -ffunction-sections \
+    -fdata-sections \
+    -fipa-pta \
+    -fipa-cp \
+    -fipa-icf \
+    -finline-functions \
+    -finline-small-functions \
+    -finline-functions-called-once \
+    -ftree-vectorize \
+    -ftree-loop-vectorize \
+    -fmerge-all-constants \
+    -fno-unwind-tables \
+    -fno-asynchronous-unwind-tables \
+    $(ARCH)
 
-CFLAGS  +=  $(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99 -w
+CFLAGS += \
+    $(INCLUDE) \
+    -D__3DS__ \
+    -DHAVE_CONFIG_H \
+    -D_GNU_SOURCE \
+    -std=c99 \
+    -w
 
-CXXFLAGS    := $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11 -w
+CXXFLAGS := \
+    $(CFLAGS) \
+    -fno-rtti \
+    -fno-exceptions \
+    -fvisibility=hidden \
+    -std=gnu++11
 
-ASFLAGS :=  -g $(ARCH)
-LDFLAGS =   -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
-
+LDFLAGS := \
+    -specs=3dsx.specs \
+    $(ARCH) \
+    -flto \
+    -Wl,--gc-sections \
+    -Wl,-Map,$(notdir $*.map)
+	
 LIBS    := -lSDLmain -lSDL_image -lSDL_mixer -lSDL -lpng -ljpeg -lz -lopusfile
 LIBS    += -lopus -logg -lvorbisidec -logg -lFLAC -lmodplug -lxmp -lmad -lmpg123 -lpicaGL -lmikmod -lcitro2d -lcitro3d -lctru -lm
 
