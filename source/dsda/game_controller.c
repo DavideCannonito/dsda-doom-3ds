@@ -50,20 +50,20 @@ static axis_t right_analog_y = {CSTICK_Y};
 static int swap_analogs;
 
 static const char *button_names[] = {
-    [DSDA_CONTROLLER_BUTTON_A] = "pad a",
-    [DSDA_CONTROLLER_BUTTON_B] = "pad b",
-    [DSDA_CONTROLLER_BUTTON_X] = "pad x",
-    [DSDA_CONTROLLER_BUTTON_Y] = "pad y",
-    [DSDA_CONTROLLER_BUTTON_BACK] = "pad back",
-    [DSDA_CONTROLLER_BUTTON_START] = "pad start",
-    [DSDA_CONTROLLER_BUTTON_LEFTSHOULDER] = "pad l",
-    [DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER] = "pad r",
-    [DSDA_CONTROLLER_BUTTON_DPAD_UP] = "dpad u",
-    [DSDA_CONTROLLER_BUTTON_DPAD_DOWN] = "dpad d",
-    [DSDA_CONTROLLER_BUTTON_DPAD_LEFT] = "dpad l",
-    [DSDA_CONTROLLER_BUTTON_DPAD_RIGHT] = "dpad r",
-    [DSDA_CONTROLLER_BUTTON_TRIGGERLEFT] = "pad lt",
-    [DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT] = "pad rt",
+    [DSDA_CONTROLLER_BUTTON_A] = "A",
+    [DSDA_CONTROLLER_BUTTON_B] = "B",
+    [DSDA_CONTROLLER_BUTTON_X] = "X",
+    [DSDA_CONTROLLER_BUTTON_Y] = "Y",
+    [DSDA_CONTROLLER_BUTTON_BACK] = "SELECT",
+    [DSDA_CONTROLLER_BUTTON_START] = "START",
+    [DSDA_CONTROLLER_BUTTON_LEFTSHOULDER] = "L",
+    [DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER] = "R",
+    [DSDA_CONTROLLER_BUTTON_DPAD_UP] = "DPAD UP",
+    [DSDA_CONTROLLER_BUTTON_DPAD_DOWN] = "DPAD DOWN",
+    [DSDA_CONTROLLER_BUTTON_DPAD_LEFT] = "DPAD LEFT",
+    [DSDA_CONTROLLER_BUTTON_DPAD_RIGHT] = "DPAD RIGHT",
+    [DSDA_CONTROLLER_BUTTON_TRIGGERLEFT] = "ZL",
+    [DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT] = "ZR",
 };
 
 const char *dsda_GameControllerButtonName(int button) {
@@ -110,8 +110,7 @@ static void dsda_PollRightStick(void) {
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
 }
-// TODO: match dsda_game_controller_button_t enum to SDL joystick enums.
-// the 3DS Joystick's DPAD are treated as HATs and not buttons
+
 static inline int PollButton(dsda_game_controller_button_t button) {
   if (button >= DSDA_CONTROLLER_BUTTON_DPAD_UP &&
       button <= DSDA_CONTROLLER_BUTTON_DPAD_LEFT) {
@@ -134,8 +133,8 @@ Uint8 hatState = SDL_JoystickGetHat(game_controller, 0);
 }
 /* TODO:
   - [X] Read how it works and how are inputs processed
-  - [ ] See how to remap controls - LOOK m_misc.c:388
-  - [ ] Create a control scheme for O3DS - LOOK m_misc.c:388
+  - [X] See how to remap controls - LOOK m_misc.c:388
+  - [X] Create a control scheme for O3DS - LOOK m_misc.c:388
 */
 void dsda_PollGameControllerButtons(void) {
   event_t ev;
@@ -159,17 +158,6 @@ void dsda_PollGameControllerButtons(void) {
                PollButton(DSDA_CONTROLLER_BUTTON_DPAD_DOWN) |
                PollButton(DSDA_CONTROLLER_BUTTON_DPAD_LEFT) |
                PollButton(DSDA_CONTROLLER_BUTTON_DPAD_RIGHT);
-
-  // this code doesn't apply to the 3DS because the triggers are treated as
-  // buttons
-
-  // trigger = dsda_AxisValue(&left_trigger);
-  // if (trigger)
-  //   ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERLEFT);
-
-  // trigger = dsda_AxisValue(&right_trigger);
-  // if (trigger)
-  //   ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT);
 
   D_PostEvent(&ev);
 }
