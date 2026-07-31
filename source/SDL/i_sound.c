@@ -40,16 +40,16 @@
 #include <unistd.h>
 #endif
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
-#include <SDL2/SDL_mutex.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_audio.h>
+#include <SDL/SDL_mutex.h>
 
-#include <SDL2/SDL_endian.h>
+#include <SDL/SDL_endian.h>
 
-#include <SDL2/SDL_version.h>
-#include <SDL2/SDL_thread.h>
+#include <SDL/SDL_version.h>
+#include <SDL/SDL_thread.h>
 #define USE_RWOPS
-#include <SDL2/SDL_mixer.h>
+#include <SDL/SDL_mixer.h>
 
 #include "z_zone.h"
 
@@ -240,8 +240,7 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
       return NULL;
     }
 
-    if (sample.channels != 1 || sample.freq != snd_samplerate
-        || SDL_AUDIO_ISFLOAT(sample.format))
+    if (sample.channels != 1 || sample.freq != snd_samplerate)
     {
       if (ConvertAudioFormat(&sampledata, &sample, &samplelen) == NULL)
       {
@@ -888,12 +887,13 @@ void I_InitSound(void)
   // Secure and configure sound device first.
   lprintf(LO_DEBUG, "I_InitSound: ");
 
-  audio_rate = snd_samplerate;
+  // audio_rate = snd_samplerate;
+  // audio_channels = 2;
+  audio_rate = 44100;
   audio_channels = 2;
   audio_buffers = getSliceSize();
 
-  if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
-                          NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
+  if (Mix_OpenAudio(audio_rate, AUDIO_S16SYS, audio_channels, audio_buffers) < 0)
   {
     lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
     nosfxparm = true;
@@ -1022,6 +1022,7 @@ static void PlaySong(int handle, int looping);
 #include "MUSIC/flplayer.h"
 #include "MUSIC/vorbisplayer.h"
 #include "MUSIC/portmidiplayer.h"
+#include "MUSIC/sdlmixerplayer.h"
 
 static Mix_Music *music[2] = { NULL, NULL };
 
@@ -1042,6 +1043,7 @@ static const music_player_t *music_players[] =
   &fl_player, // flplayer.h
   &opl_synth_player, // oplplayer.h
   &pm_player, // portmidiplayer.h
+  &sdl_mixer_player,
   NULL
 };
 #define NUM_MUS_PLAYERS ((int)(sizeof (music_players) / sizeof (music_player_t *) - 1))
@@ -1054,6 +1056,7 @@ static int music_player_was_init[NUM_MUS_PLAYERS];
 #define PLAYER_FLUIDSYNTH "fluidsynth midi player"
 #define PLAYER_OPL        "opl synth player"
 #define PLAYER_PORTMIDI   "portmidi midi player"
+#define PLAYER_SDL_MIXER  "SDL_Mixer 1.2.15-9 devkitpro"
 
 // order in which players are to be tried
 char music_player_order[NUM_MUS_PLAYERS][200] =
@@ -1064,6 +1067,8 @@ char music_player_order[NUM_MUS_PLAYERS][200] =
   PLAYER_FLUIDSYNTH,
   PLAYER_OPL,
   PLAYER_PORTMIDI,
+  PLAYER_SDL_MIXER
+
 };
 
 const char *midiplayers[midi_player_last + 1] = {
@@ -1249,7 +1254,8 @@ int I_RegisterSong(const void *data, size_t len)
   rwops_stream = SDL_RWFromConstMem(data, len);
   if (rwops_stream)
   {
-    music[0] = Mix_LoadMUS_RW(rwops_stream, SDL_FALSE);
+    // not sure how to set freesrc here
+    music[0] = Mix_LoadMUS_RW(rwops_stream);
   }
 
   // Failed to load
@@ -1270,6 +1276,15 @@ int I_RegisterSong(const void *data, size_t len)
 
 static void PlaySong(int handle, int looping)
 {
+  // HACK: very hacky and very ugly like the rest of my changes
+  if(current_player==6){
+    if(music_handle){
+      music_players[current_player]->play (music_handle, looping);
+      music_players[current_player]->setvolume (music_volume);
+
+    }
+
+  }else
   if (music_handle)
   {
     SDL_LockMutex (musmutex);
@@ -1453,8 +1468,27 @@ static int RegisterSongEx (const void *data, size_t len, int try_mus2mid)
 
       if (mus2mid_conversion_data)
       {
-        return RegisterSongEx (mus2mid_conversion_data, outbuf_len, 0);
-      }
+        // TODO: MAKE IT CLEANER
+        // return RegisterSongEx (mus2mid_conversion_data, outbuf_len, 0);
+        // if it managed to convert mus to mid, route it to SDL_Mixer
+        // six is the SDL_Mixer's player entry
+        // yes it's ugly
+        if (strcmp (music_players[6]->name (), music_player_order[6]) == 0)
+        {
+          if (music_player_was_init[6])
+          {
+            const void *temp_handle = music_players[6]->registersong (mus2mid_conversion_data, outbuf_len);
+            if (temp_handle)
+            {
+              SDL_LockMutex (musmutex);
+              current_player = 6;
+              music_handle = temp_handle;
+              SDL_UnlockMutex (musmutex);
+              lprintf(LO_DEBUG, "RegisterSongEx: Using player %s\n", music_players[current_player]->name ());
+              return 1;
+            }
+          }
+      }}
     }
   }
 

@@ -1562,39 +1562,6 @@ static void P_PostProcessThings(int mobjcount, mobj_t **mobjlist)
     P_InitCreatureCorpseQueue(false);   // false = do NOT scan for corpses
   }
 
-  if (V_IsOpenGLMode())
-  {
-    no_overlapped_sprites = true;
-    qsort(mobjlist, mobjcount, sizeof(mobjlist[0]), dicmp_sprite_by_pos);
-    if (!no_overlapped_sprites)
-    {
-      i = 1;
-      while (i < mobjcount)
-      {
-        mobj_t *m1 = mobjlist[i - 1];
-        mobj_t *m2 = mobjlist[i - 0];
-
-        if (GETXY(m1) == GETXY(m2))
-        {
-          mobj_t *mo = (m1->index < m2->index ? m1 : m2);
-          i++;
-          while (i < mobjcount && GETXY(mobjlist[i]) == GETXY(m1))
-          {
-            if (mobjlist[i]->index < mo->index)
-            {
-              mo = mobjlist[i];
-            }
-            i++;
-          }
-
-          // 'nearest'
-          mo->flags |= MF_FOREGROUND;
-        }
-        i++;
-      }
-    }
-  }
-
   Z_Free(mobjlist);
 }
 
@@ -3738,7 +3705,7 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
   if (!samelevel)
   {
     // proff 11/99: clean the memory from textures etc.
-    gld_CleanMemory();
+    // gld_CleanMemory();
 
     Z_Free(segs);
     Z_Free(nodes);
@@ -3928,19 +3895,6 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
 
   // preload graphics
   R_PrecacheLevel();
-
-  if (V_IsOpenGLMode())
-  {
-    // e6y
-    // Do not preprocess GL data during skipping,
-    // because it potentially will not be used.
-    // But preprocessing must be called immediately after stop of skipping.
-    if (!dsda_SkipMode())
-    {
-      // proff 11/99: calculate all OpenGL specific tables etc.
-      gld_PreprocessLevel();
-    }
-  }
 
   //e6y
   if (!samelevel)

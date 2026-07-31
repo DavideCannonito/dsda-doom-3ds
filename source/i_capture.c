@@ -28,8 +28,8 @@
  *---------------------------------------------------------------------
  */
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_thread.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_thread.h>
 
 #include <stdio.h>
 #include "STUBS/i_capture_stubs.h"
@@ -544,12 +544,13 @@ void I_CapturePrep (const char *fn)
   // start reader threads
   soundpipe.stdoutdumpname = "sound_stdout.txt";
   soundpipe.stderrdumpname = "sound_stderr.txt";
-  soundpipe.outthread = SDL_CreateThread (threadstdoutproc, "soundpipe.outthread", &soundpipe);
-  soundpipe.errthread = SDL_CreateThread (threadstderrproc, "soundpipe.errthread", &soundpipe);
+  // this code will never be reached anyway
+  soundpipe.outthread = SDL_CreateThread (threadstdoutproc, "soundpipe.outthread"/*&soundpipe*/);
+  soundpipe.errthread = SDL_CreateThread (threadstderrproc, "soundpipe.errthread"/*&soundpipe*/);
   videopipe.stdoutdumpname = "video_stdout.txt";
   videopipe.stderrdumpname = "video_stderr.txt";
-  videopipe.outthread = SDL_CreateThread (threadstdoutproc, "videopipe.outthread", &videopipe);
-  videopipe.errthread = SDL_CreateThread (threadstderrproc, "videopipe.errthread", &videopipe);
+  videopipe.outthread = SDL_CreateThread (threadstdoutproc, "videopipe.outthread"/*&videopipe*/);
+  videopipe.errthread = SDL_CreateThread (threadstderrproc, "videopipe.errthread"/*&videopipe*/);
 
   I_AtExit (I_CaptureFinish, true, "I_CaptureFinish", exit_priority_normal);
 }
@@ -629,8 +630,10 @@ void I_CaptureFinish (void)
 
   muxpipe.stdoutdumpname = "mux_stdout.txt";
   muxpipe.stderrdumpname = "mux_stderr.txt";
-  muxpipe.outthread = SDL_CreateThread (threadstdoutproc, "muxpipe.outthread", &muxpipe);
-  muxpipe.errthread = SDL_CreateThread (threadstderrproc, "muxpipe.errthread", &muxpipe);
+    // this code will never be reached anyway
+
+  muxpipe.outthread = SDL_CreateThread (threadstdoutproc, "muxpipe.outthread"/*, &muxpipe*/);
+  muxpipe.errthread = SDL_CreateThread (threadstderrproc, "muxpipe.errthread"/*, &muxpipe*/);
 
   my_pclose3 (&muxpipe);
   SDL_WaitThread (muxpipe.outthread, &s);

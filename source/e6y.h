@@ -58,6 +58,7 @@ typedef struct camera_s
   angle_t PrevPitch;
   int type;
 } camera_t;
+extern int gl_render_fov;
 
 extern dboolean wasWiped;
 
@@ -68,7 +69,6 @@ extern char demo_len_st[80];
 
 extern int mouse_handler;
 
-extern int gl_render_fov;
 extern float gl_render_ratio;
 extern float gl_render_fovratio;
 extern float gl_render_fovy;

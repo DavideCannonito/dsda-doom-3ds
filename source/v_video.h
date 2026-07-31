@@ -37,7 +37,7 @@
 #ifndef __V_VIDEO__
 #define __V_VIDEO__
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "doomtype.h"
 #include "doomdef.h"
@@ -322,7 +322,7 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b);
 // [FG] colored blood and gibs
 int V_BloodColor(int blood);
 
-#include "gl_struct.h"
+// // #include "gl_struct.h"
 
 void V_FillRectVPT(int scrn, int x, int y, int width, int height, byte color, enum patch_translation_e flags);
 int V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_translation_e flags);

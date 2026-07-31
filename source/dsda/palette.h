@@ -18,7 +18,7 @@
 #ifndef __DSDA_PALETTE__
 #define __DSDA_PALETTE__
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 typedef enum {
   playpal_default,

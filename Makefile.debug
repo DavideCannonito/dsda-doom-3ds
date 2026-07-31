@@ -34,15 +34,15 @@ CFLAGS  :=  -g -Wall -O0 \
             -ffunction-sections \
             $(ARCH)
 
-CFLAGS  +=  $(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99
+CFLAGS  +=  $(INCLUDE) -D__3DS__ -DHAVE_CONFIG_H -D_GNU_SOURCE -std=c99 -w
 
-CXXFLAGS    := $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+CXXFLAGS    := $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11 -w
 
 ASFLAGS :=  -g $(ARCH)
 LDFLAGS =   -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS    := -lSDL2main -lSDL2_image -lSDL2_mixer -lSDL2 -lpng -ljpeg -lz -lopusfile
-LIBS    += -lopus -logg -lvorbisidec -logg -lFLAC -lmodplug -lxmp -lmad -lmpg123 -lpicaGL -lcitro2d -lcitro3d -lctru -lm
+LIBS    := -lSDLmain -lSDL_image -lSDL_mixer -lSDL -lpng -ljpeg -lz -lopusfile
+LIBS    += -lopus -logg -lvorbisidec -logg -lFLAC -lmodplug -lxmp -lmad -lmpg123 -lpicaGL -lmikmod -lcitro2d -lcitro3d -lctru -lm
 
 LIBDIRS := $(CTRULIB) $(PORTLIBS)
 

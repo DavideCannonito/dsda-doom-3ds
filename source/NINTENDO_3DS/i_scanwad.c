@@ -88,7 +88,8 @@ void I_ScanWADFiles(const char *path, int *argc, char **argv) {
       // being the path to the game. Hopefully this is safe (aka won't bite me back)
       argv[0] = strdup("-iwad");
       argv[1] = strdup(foundwads[userchoice]);
-      *argc += 2;
+      argv[2] = strdup("-verbose");
+      *argc += 3;
       break;
     }
   }

@@ -271,6 +271,10 @@ void I_SetProcessPriority(void)
 
 int main(int argc, char **argv)
 {
+  gfxInitDefault();
+  consoleInit(GFX_BOTTOM,NULL);
+  setenv("TIMIDITY_CFG", "sdmc:/etc/timidity.cfg", 1);
+  
   // these will be passed to parse the command line args.
   int realargc=0;
   char** realargv=malloc(ARG_MAX*sizeof(char*));
@@ -279,9 +283,6 @@ int main(int argc, char **argv)
     I_Error("Cannot allocate memory for argv");
   }
   memset(realargv, 0, ARG_MAX*sizeof(char*));
-  
-  gfxInitDefault();
-  consoleInit(GFX_BOTTOM, NULL);
 
   // SDL should be already init'ing this.
   romfsInit();
@@ -355,9 +356,12 @@ int main(int argc, char **argv)
   // Priority class for the prboom-plus process
   // TODO: Remove this as it's not for Nintendo 3DS
   I_SetProcessPriority();
-
   /* cphipps - call to video specific startup code */
   I_PreInitGraphics();
+
+  // gfxInitDefault();
+  // HACK: i dont know any better way to do this
+  consoleInit(GFX_BOTTOM,NULL);
 
   D_DoomMain ();
   return 0;

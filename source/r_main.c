@@ -36,7 +36,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "doomstat.h"
 #include "d_net.h"
@@ -598,11 +598,7 @@ void R_BuildModelViewMatrix(void)
   yaw = 270.0f - (float)(viewangle>>ANGLETOFINESHIFT) * 360.0f / FINEANGLES;
   yaw *= (float)M_PI / 180.0f;
   pitch = 0;
-  if (V_IsOpenGLMode())
-  {
-    pitch = (float)(viewpitch>>ANGLETOFINESHIFT) * 360.0f / FINEANGLES;
-    pitch *= (float)M_PI / 180.0f;
-  }
+
 
   x =  (float)viewx / MAP_SCALE;
   z = -(float)viewy / MAP_SCALE;
@@ -767,9 +763,6 @@ void R_ExecuteSetViewSize (void)
 
   I_SetWindowRect();
   I_SetViewportRect();
-
-  if (V_IsOpenGLMode())
-    dsda_GLSetRenderViewportParams();
 
   dsda_InitExHud();
   dsda_BeginRenderStats();
@@ -1013,17 +1006,6 @@ static void R_InitDrawScene(void)
   static int fuzzgametic = 0;
   static int savedfuzzpos = 0;
 
-  if (V_IsOpenGLMode())
-  {
-    // proff 11/99: clear buffers
-    gld_InitDrawScene();
-
-    if (!automap_on)
-    {
-      // proff 11/99: switch to perspective mode
-      gld_StartDrawScene();
-    }
-  } else {
     if (dsda_IntConfig(dsda_config_flashing_hom))
     { // killough 2/10/98: add flashing red HOM indicators
       unsigned char color=(gametic % 20) < 9 ? 0xb0 : 0;
@@ -1041,7 +1023,7 @@ static void R_InitDrawScene(void)
     {
       R_SetFuzzPos(savedfuzzpos);
     }
-  }
+
 }
 
 static void R_RenderBSPNodes(void)
@@ -1090,11 +1072,6 @@ void R_RenderPlayerView (player_t* player)
 
   FakeNetUpdate();
 
-  if (V_IsOpenGLMode()) {
-    DSDA_ADD_CONTEXT(sf_gl_frustum);
-    gld_FrustumSetup();
-    DSDA_REMOVE_CONTEXT(sf_gl_frustum);
-  }
 
   DSDA_ADD_CONTEXT(sf_bsp_nodes);
   R_RenderBSPNodes();
@@ -1123,11 +1100,4 @@ void R_RenderPlayerView (player_t* player)
   }
 
   FakeNetUpdate();
-
-  if (V_IsOpenGLMode() && !automap_on) {
-    DSDA_ADD_CONTEXT(sf_draw_scene);
-    gld_DrawScene(player);
-    gld_EndDrawScene();
-    DSDA_REMOVE_CONTEXT(sf_draw_scene);
-  }
 }

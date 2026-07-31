@@ -38,14 +38,13 @@
 #include "config.h"
 #endif
 
-#include <SDL2/SDL_opengl.h>
+#include <SDL/SDL_opengl.h>
 
 #include "doomtype.h"
 #include "v_video.h"
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
-extern SDL_Window *sdl_window;
-extern SDL_Renderer *sdl_renderer;
+extern SDL_Surface *sdl_renderer;
 
 extern SDL_Rect renderer_rect;
 extern SDL_Rect window_rect;

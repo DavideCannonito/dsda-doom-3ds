@@ -82,10 +82,6 @@ result_e T_MoveFloorPlane
   fixed_t       lastpos;
   fixed_t       destheight; //jff 02/04/98 used to keep floors from moving thru each other
 
-  if (V_IsOpenGLMode())
-  {
-    gld_UpdateSplitData(sector);
-  }
 
   switch(direction)
   {

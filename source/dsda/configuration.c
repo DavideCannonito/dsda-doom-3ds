@@ -31,7 +31,7 @@
 #include "doomstat.h"
 #include "hu_stuff.h"
 #include "g_overflow.h"
-#include "gl_struct.h"
+// #include "gl_struct.h"
 #include "lprintf.h"
 #include "r_main.h"
 #include "r_segs.h"
@@ -49,6 +49,9 @@
 #include "dsda/utility.h"
 
 #include "configuration.h"
+
+// very ugly just to import gl_render_fov. how did it compile without it before i started hacking opengl away?
+#include "e6y.h"
 
 typedef union {
   int v_int;
@@ -107,6 +110,7 @@ void I_ResetMusicVolume(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
 void gld_MultisamplingInit(void);
+void gld_MultisamplingInit(void){}
 void M_ChangeFOV(void);
 void I_InitMouse(void);
 void AccelChanging(void);
@@ -129,6 +133,9 @@ void M_ChangeMapTextured(void);
 void AM_InitParams(void);
 void AM_initPlayerTrail(void);
 void gld_ResetAutomapTransparency(void);
+void gld_ResetAutomapTransparency(void){
+  
+}
 void M_ChangeVideoMode(void);
 void M_ChangeUncappedFrameRate(void);
 void M_ChangeFullScreen(void);
@@ -624,7 +631,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
-    dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
+    dsda_config_int, 3, 4 - 1, { 5 }, NULL,
     NOT_STRICT, M_ChangeSkyMode
   },
   [dsda_config_gl_render_multisampling] = {

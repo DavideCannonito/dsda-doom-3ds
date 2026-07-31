@@ -39,7 +39,7 @@
 #include <math.h>
 #include <float.h>
 
-#include "gl_opengl.h"
+// #include "gl_opengl.h"
 #include "doomstat.h"
 #include "st_stuff.h"
 #include "r_main.h"
@@ -66,6 +66,30 @@
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/utility.h"
+
+/*FROM `gl_struct.h`*/
+// Nice map
+enum
+{
+  am_icon_shadow,
+
+  am_icon_corpse,
+  am_icon_normal,
+  am_icon_health,
+  am_icon_armor,
+  am_icon_ammo,
+  am_icon_key,
+  am_icon_power,
+  am_icon_weap,
+
+  am_icon_arrow,
+  am_icon_monster,
+  am_icon_player,
+  am_icon_mark,
+  am_icon_bullet,
+
+  am_icon_count
+};
 
 mapcolor_t mapcolor = {
   .plyr = { 112, 96, 64, 176 },
@@ -2045,11 +2069,7 @@ static void AM_drawPlayers(void)
   fixed_t scale;
 
 #if defined(HAVE_LIBSDL2_IMAGE)
-  if (V_IsOpenGLMode())
-  {
-    if (map_things_appearance == map_things_appearance_icon)
-      return;
-  }
+
 #endif
 
   if (map_things_appearance == map_things_appearance_scaled)
@@ -2258,10 +2278,10 @@ static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t 
   ang = (rotate ? angle : 0) + (automap_rotate ? ANG90 - viewangle : 0);
   rot = -(float)ang / (float)(1u << 31) * (float)M_PI;
 
-  gld_AddNiceThing(type, fx, fy, fradius, rot, r, g, b, a);
+  // gld_AddNiceThing(type, fx, fy, fradius, rot, r, g, b, a);
   if (need_shadow)
   {
-    gld_AddNiceThing(am_icon_shadow, fx, fy, shadow_radius, rot, 0, 0, 0, 128);
+    // gld_AddNiceThing(am_icon_shadow, fx, fy, shadow_radius, rot, 0, 0, 0, 128);
   }
 }
 
@@ -2272,7 +2292,7 @@ static void AM_DrawNiceThings(void)
   mpoint_t p;
   angle_t angle;
 
-  gld_ClearNiceThings();
+  // gld_ClearNiceThings();
 
   // draw players
   for (i = 0; i < g_maxplayers; i++)
@@ -2356,7 +2376,7 @@ static void AM_DrawNiceThings(void)
         p.fx = CXMTOF_F(p.fx);
         p.fy = CYMTOF_F(p.fy);
 
-        gld_AddNiceThing(am_icon_mark, p.fx, p.fy, radius, 0, 255, 255, 0, (unsigned char)anim_flash_level);
+        // gld_AddNiceThing(am_icon_mark, p.fx, p.fy, radius, 0, 255, 255, 0, (unsigned char)anim_flash_level);
       }
     }
   }
@@ -2378,14 +2398,7 @@ static void AM_drawThings(void)
   int lineguylines = NUMTHINTRIANGLEGUYLINES;
 
 #if defined(HAVE_LIBSDL2_IMAGE)
-  if (V_IsOpenGLMode())
-  {
-    if (map_things_appearance == map_things_appearance_icon)
-    {
-      AM_DrawNiceThings();
-      return;
-    }
-  }
+
 #endif
 
   if (dsda_RevealAutomap() != 2)
@@ -2647,11 +2660,7 @@ static void AM_drawMarks(void)
     AM_drawPlayerTrail();
 
 #if defined(HAVE_LIBSDL2_IMAGE)
-  if (V_IsOpenGLMode())
-  {
-    if (map_things_appearance == map_things_appearance_icon)
-      return;
-  }
+
 #endif
 
   for (i = 0; i < markpointnum; i++) // killough 2/22/98: remove automap mark limit
@@ -2783,7 +2792,7 @@ void M_ChangeMapTextured(void)
 
   if (in_game && gamestate == GS_LEVEL && V_IsOpenGLMode())
   {
-    gld_ProcessTexturedMap();
+    // gld_ProcessTexturedMap();
   }
 }
 
@@ -2805,10 +2814,7 @@ void M_ChangeMapMultisamling(void)
 
 void AM_drawSubsectors(void)
 {
-  if (V_IsOpenGLMode())
-  {
-    gld_MapDrawSubsectors(plr, f_x, f_y, m_x, m_y, f_w, f_h, scale_mtof);
-  }
+
 }
 
 static void AM_setFrameVariables(void)
@@ -2879,11 +2885,6 @@ void AM_Drawer (dboolean minimap)
 
   AM_setFrameVariables();
 
-  if (V_IsOpenGLMode())
-  {
-    // do not use multisampling in automap mode if map_use_multisampling 0
-    gld_MultisamplingSet();
-  }
 
   if (!automap_overlay) // cph - If not overlay mode, clear background for the automap
     V_FillRect(FB, f_x, f_y, f_w, f_h, (byte)mapcolor_p->back); //jff 1/5/98 background default color
@@ -2904,19 +2905,6 @@ void AM_Drawer (dboolean minimap)
   AM_drawThings(); //jff 1/5/98 default double IDDT sprite
   AM_DrawConnections();
   AM_drawCrosshair(mapcolor_p->hair);   //jff 1/7/98 default crosshair color
-
-  if (V_IsOpenGLMode())
-  {
-    gld_DrawMapLines();
-    M_ArrayClear(&map_lines);
-
-#if defined(HAVE_LIBSDL2_IMAGE)
-    if (map_things_appearance == map_things_appearance_icon)
-    {
-      gld_DrawNiceThings(f_x, f_y, f_w, f_h);
-    }
-#endif
-  }
 
   AM_drawMarks();
 

@@ -39,7 +39,7 @@
 #include "config.h"
 #endif
 
-#include <SDL2/SDL_timer.h>
+#include <SDL/SDL_timer.h>
 
 #ifdef _MSC_VER
 #include <io.h>
@@ -293,21 +293,9 @@ static void D_Wipe(void)
     }
     while (!tics);
 
-    // elim - Enable render-to-texture for GL so "melt" is rendered at same resolution as the game scene
-    if (V_IsOpenGLMode())
-    {
-      dsda_GLLetterboxClear();
-      dsda_GLStartMeltRenderTexture();
-    }
-
     wipestart = nowtime;
     done = wipe_ScreenWipe(tics);
 
-    // elim - Render texture to screen
-    if (V_IsOpenGLMode())
-    {
-      dsda_GLEndMeltRenderTexture();
-    }
 
     M_Drawer();                   // menu is drawn even on top of wipes
 
@@ -385,11 +373,6 @@ void D_Display (fixed_t frac)
       I_FinishUpdate();
     if (!dsda_InputActive(dsda_input_use))
       return;
-
-    if (V_IsOpenGLMode())
-    {
-      gld_PreprocessLevel();
-    }
   }
 
   if (!dsda_SkipMode() || !dsda_InputActive(dsda_input_use))
@@ -2006,7 +1989,7 @@ static void D_DoomMainSetup(void)
   // jff 3/24/98 this sets startskill if it was -1
 
   // proff 04/05/2000: for GL-specific switches
-  gld_InitCommandLine();
+  // gld_InitCommandLine();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "V_Init: allocate screens.\n");

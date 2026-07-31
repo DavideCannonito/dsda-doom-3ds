@@ -76,6 +76,8 @@
 #include "dsda/thing_id.h"
 #include "dsda/utility.h"
 
+TAnimItemParam *anim_flats = NULL;
+TAnimItemParam *anim_textures = NULL;
 //
 //      source animation definition
 //

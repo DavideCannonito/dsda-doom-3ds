@@ -13,7 +13,7 @@
 // DESCRIPTION:
 //      Load sound lumps with libsndfile.
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 #include "STUBS/i_sndfile_stubs.h"
 
 #include "lprintf.h"
@@ -136,7 +136,7 @@ void *Load_SNDFile(const void *data, SDL_AudioSpec *sample, void **sampledata,
 
   sample->channels = sfinfo.channels;
   sample->freq = sfinfo.samplerate;
-  sample->format = float_format ? AUDIO_F32 : AUDIO_S16;
+  sample->format = float_format ? AUDIO_S16 : AUDIO_S16;
 
   *sampledata = local_sampledata;
   *samplelen = local_samplelen;

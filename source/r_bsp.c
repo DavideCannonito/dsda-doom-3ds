@@ -393,73 +393,6 @@ static void R_AddLine (seg_t *line)
 
   curline = line;
 
-  if (V_IsOpenGLMode())
-  {
-    line_t* l = line->linedef;
-    sector_t* sec = subsectors[currentsubsectornum].sector;
-
-    // Don't add plane to drawing list until we encounter a
-    // non-self-referencing linedef in the subsector.
-    if (sec->gl_validcount != validcount && (l == NULL || l->frontsector != l->backsector))
-    {
-      sec->gl_validcount = validcount;
-
-      gld_AddPlane(currentsubsectornum, floorplane, ceilingplane);
-    }
-
-    angle1 = R_PointToPseudoAngle(line->v1->x, line->v1->y);
-    angle2 = R_PointToPseudoAngle(line->v2->x, line->v2->y);
-
-    // Back side, i.e. backface culling	- read: endAngle >= startAngle!
-    if (angle2 - angle1 < ANG180 || !line->linedef)
-    {
-      return;
-    }
-    if (!ignore_gl_range_clipping && !gld_clipper_SafeCheckRange(angle2, angle1))
-    {
-      return;
-    }
-
-    map_subsectors[currentsubsectornum] = 1;
-
-    if (!line->backsector)
-    {
-      gld_clipper_SafeAddClipRange(angle2, angle1);
-    }
-    else
-    {
-      if (line->frontsector == line->backsector)
-      {
-        if (texturetranslation[line->sidedef->midtexture] == NO_TEXTURE)
-        {
-          //e6y: nothing to do here!
-          return;
-        }
-      }
-      if (CheckClip(line, line->frontsector, line->backsector))
-      {
-        gld_clipper_SafeAddClipRange(angle2, angle1);
-      }
-    }
-
-    if (ds_p == drawsegs+maxdrawsegs)   // killough 1/98 -- fix 2s line HOM
-    {
-      unsigned pos = ds_p - drawsegs; // jff 8/9/98 fix from ZDOOM1.14a
-      unsigned newmax = maxdrawsegs ? maxdrawsegs*2 : 128; // killough
-      drawsegs = Z_Realloc(drawsegs,newmax*sizeof(*drawsegs));
-      ds_p = drawsegs + pos;          // jff 8/9/98 fix from ZDOOM1.14a
-      maxdrawsegs = newmax;
-    }
-
-    curline->linedef->flags |= ML_MAPPED;
-
-    // proff 11/99: the rest of the calculations is not needed for OpenGL
-    ds_p++->curline = curline;
-    gld_AddWall(curline);
-
-    return;
-  }
-
   angle1 = R_PointToAngleEx(line->v1->px, line->v1->py);
   angle2 = R_PointToAngleEx(line->v2->px, line->v2->py);
 
@@ -570,13 +503,6 @@ static dboolean R_CheckBBox(const fixed_t *bspcoord)
 
   check = checkcoord[boxpos];
 
-  if (V_IsOpenGLMode())
-  {
-    angle1 = R_PointToPseudoAngle(bspcoord[check[0]], bspcoord[check[1]]);
-    angle2 = R_PointToPseudoAngle(bspcoord[check[2]], bspcoord[check[3]]);
-    return gld_clipper_SafeCheckRange(angle2, angle1);
-  }
-
   angle1 = R_PointToAngleEx (bspcoord[check[0]], bspcoord[check[1]]) - viewangle;
   angle2 = R_PointToAngleEx (bspcoord[check[2]], bspcoord[check[3]]) - viewangle;
 
@@ -626,121 +552,121 @@ static visplane_t dummyceilingplane;
 // much more correctly and fastly the the original
 static void R_HandleGLFakeFlats(sector_t *sector)
 {
-  // check if the sector is faked
-  sector_t *tmpsec = NULL;
+//   // check if the sector is faked
+//   sector_t *tmpsec = NULL;
 
-  if (frontsector == sector)
-  {
-    if (!gl_use_stencil)
-    {
-      // if the sector has bottomtextures, then the floorheight will be set to the
-      // highest surounding floorheight
-      if ((frontsector->flags & NO_BOTTOMTEXTURES) || (!floorplane))
-      {
-        tmpsec = GetBestFake(frontsector, 0, validcount);
+//   if (frontsector == sector)
+//   {
+//     if (!gl_use_stencil)
+//     {
+//       // if the sector has bottomtextures, then the floorheight will be set to the
+//       // highest surounding floorheight
+//       if ((frontsector->flags & NO_BOTTOMTEXTURES) || (!floorplane))
+//       {
+//         tmpsec = GetBestFake(frontsector, 0, validcount);
 
-        if (tmpsec && frontsector->floorheight != tmpsec->floorheight)
-        {
-          dummyfloorplane.height = tmpsec->floorheight;
-          dummyfloorplane.lightlevel = tmpsec->lightlevel;
-          dummyfloorplane.picnum = tmpsec->floorpic;
-          dummyfloorplane.special = tmpsec->special;
-          floorplane = &dummyfloorplane;
-        }
-      }
+//         if (tmpsec && frontsector->floorheight != tmpsec->floorheight)
+//         {
+//           dummyfloorplane.height = tmpsec->floorheight;
+//           dummyfloorplane.lightlevel = tmpsec->lightlevel;
+//           dummyfloorplane.picnum = tmpsec->floorpic;
+//           dummyfloorplane.special = tmpsec->special;
+//           floorplane = &dummyfloorplane;
+//         }
+//       }
 
-      // the same for ceilings. they will be set to the lowest ceilingheight
-      if ((frontsector->flags & NO_TOPTEXTURES) || (!ceilingplane))
-      {
-        tmpsec = GetBestFake(frontsector, 1, validcount);
+//       // the same for ceilings. they will be set to the lowest ceilingheight
+//       if ((frontsector->flags & NO_TOPTEXTURES) || (!ceilingplane))
+//       {
+//         tmpsec = GetBestFake(frontsector, 1, validcount);
 
-        if (tmpsec && frontsector->ceilingheight != tmpsec->ceilingheight)
-        {
-          dummyceilingplane.height = tmpsec->ceilingheight;
-          dummyceilingplane.lightlevel = tmpsec->lightlevel;
-          dummyceilingplane.picnum = tmpsec->ceilingpic;
-          dummyceilingplane.special = 0;
-          ceilingplane = &dummyceilingplane;
-        }
-      }
-    }
+//         if (tmpsec && frontsector->ceilingheight != tmpsec->ceilingheight)
+//         {
+//           dummyceilingplane.height = tmpsec->ceilingheight;
+//           dummyceilingplane.lightlevel = tmpsec->lightlevel;
+//           dummyceilingplane.picnum = tmpsec->ceilingpic;
+//           dummyceilingplane.special = 0;
+//           ceilingplane = &dummyceilingplane;
+//         }
+//       }
+//     }
 
-    /*
-      * Floors higher than the player's viewheight (or much lower) or
-      * ceilings lower than the player's viewheight with no textures will
-      * bleed the sector behind them through in the software renderer. This
-      * is occasionally used to create an "invisible wall" effect to hide
-      * monsters, but in the GL renderer would leave an untextured space
-      * beneath or above unless otherwise patched.
-      *
-      * This code attempts to find an appropriate sector to "bleed
-      * through" over the untextured gap.
-      *
-      * Note there is a corner case that is not handled: If a dummy
-      * sector off-screen is the lowest adjacent sector to the invisible
-      * wall, and it is at a different height than the correct
-      * bleed-through sector, the dummy sector is copied instead of the
-      * sector behind the player. It may be possible to address this in
-      * a future patch by refactoring this into the renderer and tagging
-      * visible candidate sectors during drawing.
-      */
-    if (frontsector->flags & MISSING_BOTTOMTEXTURES)
-    {
-      tmpsec = NULL;
+//     /*
+//       * Floors higher than the player's viewheight (or much lower) or
+//       * ceilings lower than the player's viewheight with no textures will
+//       * bleed the sector behind them through in the software renderer. This
+//       * is occasionally used to create an "invisible wall" effect to hide
+//       * monsters, but in the GL renderer would leave an untextured space
+//       * beneath or above unless otherwise patched.
+//       *
+//       * This code attempts to find an appropriate sector to "bleed
+//       * through" over the untextured gap.
+//       *
+//       * Note there is a corner case that is not handled: If a dummy
+//       * sector off-screen is the lowest adjacent sector to the invisible
+//       * wall, and it is at a different height than the correct
+//       * bleed-through sector, the dummy sector is copied instead of the
+//       * sector behind the player. It may be possible to address this in
+//       * a future patch by refactoring this into the renderer and tagging
+//       * visible candidate sectors during drawing.
+//       */
+//     if (frontsector->flags & MISSING_BOTTOMTEXTURES)
+//     {
+//       tmpsec = NULL;
 
-      if (frontsector->floorheight >= viewz)
-        tmpsec = GetBestBleedSector(frontsector, BLEED_NONE);
+//       if (frontsector->floorheight >= viewz)
+//         tmpsec = GetBestBleedSector(frontsector, BLEED_NONE);
 
-#if EXPERIMENTAL_BLEED
-      if (tmpsec == NULL &&
-          viewz - frontsector->floorheight >= (FLOOR_BLEED_THRESHOLD << FRACBITS))
-        tmpsec = GetBestBleedSector(frontsector, BLEED_OCCLUDE);
-#endif
+// #if EXPERIMENTAL_BLEED
+//       if (tmpsec == NULL &&
+//           viewz - frontsector->floorheight >= (FLOOR_BLEED_THRESHOLD << FRACBITS))
+//         tmpsec = GetBestBleedSector(frontsector, BLEED_OCCLUDE);
+// #endif
 
-      if (tmpsec)
-      {
-        dummyfloorplane.height = tmpsec->floorheight;
-        dummyfloorplane.lightlevel = tmpsec->lightlevel;
-        dummyfloorplane.picnum = tmpsec->floorpic;
-        dummyfloorplane.special = tmpsec->special;
-        dummyfloorplane.rotation = tmpsec->floor_rotation;
-        dummyfloorplane.xoffs = tmpsec->floor_xoffs;
-        dummyfloorplane.yoffs = tmpsec->floor_yoffs;
-        dummyfloorplane.xscale = tmpsec->floor_xscale;
-        dummyfloorplane.yscale = tmpsec->floor_yscale;
+//       if (tmpsec)
+//       {
+//         dummyfloorplane.height = tmpsec->floorheight;
+//         dummyfloorplane.lightlevel = tmpsec->lightlevel;
+//         dummyfloorplane.picnum = tmpsec->floorpic;
+//         dummyfloorplane.special = tmpsec->special;
+//         dummyfloorplane.rotation = tmpsec->floor_rotation;
+//         dummyfloorplane.xoffs = tmpsec->floor_xoffs;
+//         dummyfloorplane.yoffs = tmpsec->floor_yoffs;
+//         dummyfloorplane.xscale = tmpsec->floor_xscale;
+//         dummyfloorplane.yscale = tmpsec->floor_yscale;
 
-        floorplane = &dummyfloorplane;
-      }
-    }
+//         floorplane = &dummyfloorplane;
+//       }
+//     }
 
-    if (frontsector->flags & MISSING_TOPTEXTURES)
-    {
-      tmpsec = NULL;
+//     if (frontsector->flags & MISSING_TOPTEXTURES)
+//     {
+//       tmpsec = NULL;
 
-      if (frontsector->ceilingheight <= viewz)
-        tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING);
+//       if (frontsector->ceilingheight <= viewz)
+//         tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING);
 
-#if EXPERIMENTAL_BLEED
-      if (tmpsec == NULL &&
-          frontsector->ceilingheight - viewz >= (CEILING_BLEED_THRESHOLD << FRACBITS))
-        tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING | BLEED_OCCLUDE);
-#endif
+// #if EXPERIMENTAL_BLEED
+//       if (tmpsec == NULL &&
+//           frontsector->ceilingheight - viewz >= (CEILING_BLEED_THRESHOLD << FRACBITS))
+//         tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING | BLEED_OCCLUDE);
+// #endif
 
-      if (tmpsec)
-      {
-        dummyceilingplane.height = tmpsec->ceilingheight;
-        dummyceilingplane.lightlevel = tmpsec->lightlevel;
-        dummyceilingplane.picnum = tmpsec->ceilingpic;
-        dummyceilingplane.special = 0;
-        dummyceilingplane.rotation = tmpsec->ceiling_rotation;
-        dummyceilingplane.xoffs = tmpsec->ceiling_xoffs;
-        dummyceilingplane.yoffs = tmpsec->ceiling_yoffs;
-        dummyceilingplane.xscale = tmpsec->ceiling_xscale;
-        dummyceilingplane.yscale = tmpsec->ceiling_yscale;
-        ceilingplane = &dummyceilingplane;
-      }
-    }
-  }
+//       if (tmpsec)
+//       {
+//         dummyceilingplane.height = tmpsec->ceilingheight;
+//         dummyceilingplane.lightlevel = tmpsec->lightlevel;
+//         dummyceilingplane.picnum = tmpsec->ceilingpic;
+//         dummyceilingplane.special = 0;
+//         dummyceilingplane.rotation = tmpsec->ceiling_rotation;
+//         dummyceilingplane.xoffs = tmpsec->ceiling_xoffs;
+//         dummyceilingplane.yoffs = tmpsec->ceiling_yoffs;
+//         dummyceilingplane.xscale = tmpsec->ceiling_xscale;
+//         dummyceilingplane.yscale = tmpsec->ceiling_yscale;
+//         ceilingplane = &dummyceilingplane;
+//       }
+//     }
+//   }
 }
 
 static void R_UpdateGlobalPlanes(sector_t *sector, int *floorlightlevel, int *ceilinglightlevel)
@@ -788,10 +714,6 @@ static void R_UpdateGlobalPlanes(sector_t *sector, int *floorlightlevel, int *ce
                 frontsector->ceiling_yscale
                 ) : NULL;
 
-  if (V_IsOpenGLMode())
-  {
-    R_HandleGLFakeFlats(sector);
-  }
 }
 
 //

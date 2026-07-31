@@ -47,7 +47,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "doomdef.h"
 #include "doomstat.h"
@@ -3308,11 +3308,6 @@ setup_menu_t gen_misc_settings[] = {
 void M_ChangeFullScreen(void)
 {
   I_UpdateVideoMode();
-
-  if (V_IsOpenGLMode())
-  {
-    gld_PreprocessLevel();
-  }
 }
 
 void M_ChangeVideoMode(void)
@@ -5520,19 +5515,8 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 
   if (dsda_InputActivated(dsda_input_showalive) && !dsda_StrictMode())
   {
-    if (V_IsOpenGLMode())
-    {
-      const char* const show_alive_message[3] = { "off", "(mode 1) on", "(mode 2) on" };
-      int show_alive = dsda_CycleConfig(dsda_config_show_alive_monsters, false);
-
-      if (show_alive >= 0 && show_alive < 3)
-        doom_printf("Show Alive Monsters %s", show_alive_message[show_alive]);
-    }
-    else
-    {
       dsda_UpdateIntConfig(dsda_config_show_alive_monsters,0,false);
-      doom_printf("Action Only Supported in OpenGL");
-    }
+      doom_printf("Action Only Supported in OpenGL"); 
   }
 
   M_HandleToggles();
@@ -6222,12 +6206,13 @@ void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
   if (mnact > mnact_inactive && gamestate == GS_LEVEL)
     dsda_TrackFeature(uf_menu);
 
-  if (SDL_IsTextInputActive()) {
+  // -1 is to enquire status
+  if (SDL_EnableUNICODE(-1)) {
     if (!(currentMenu && currentMenu->flags & MENUF_TEXTINPUT))
-      SDL_StopTextInput();
+      SDL_EnableUNICODE(0);
   }
   else if (currentMenu && currentMenu->flags & MENUF_TEXTINPUT)
-    SDL_StartTextInput();
+    SDL_EnableUNICODE(0);
 }
 
 //

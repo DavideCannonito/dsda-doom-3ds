@@ -38,10 +38,11 @@
 
 #include <stdlib.h>
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #ifdef HAVE_LIBSDL2_IMAGE
-#include <SDL2/SDL_image.h>
+#include <SDL/SDL_image.h>
+#include "savepng.h"
 #endif
 
 #include "doomstat.h"
@@ -82,7 +83,7 @@ int I_ScreenShot(const char *fname)
   if (screenshot)
   {
 #ifdef HAVE_LIBSDL2_IMAGE
-    result = IMG_SavePNG(screenshot, fname);
+    result = SDL_SavePNG(screenshot, fname);
 #else
     result = SDL_SaveBMP(screenshot, fname);
 #endif
@@ -106,10 +107,6 @@ unsigned char *I_GrabScreen(void)
 
   I_UpdateRenderSize();
 
-  if (V_IsOpenGLMode())
-  {
-    return gld_ReadScreen();
-  }
 
   size = renderW * renderH * 3;
   if (!pixels || size > pixels_size)
@@ -121,7 +118,8 @@ unsigned char *I_GrabScreen(void)
   if (pixels && size)
   {
     SDL_Rect screen = { 0, 0, renderW, renderH };
-    SDL_RenderReadPixels(sdl_renderer, &screen, SDL_PIXELFORMAT_RGB24, pixels, renderW * 3);
+    // idk how to modify this. after all, my port wont support screenshot
+    // SDL_RenderReadPixels(sdl_renderer, &screen, SDL_PIXELFORMAT_RGB24, pixels, renderW * 3);
   }
 
   return pixels;

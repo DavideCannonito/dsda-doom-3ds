@@ -38,8 +38,8 @@
 #include "config.h"
 #endif
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_opengl.h>
 
 #if SDL_VERSION_ATLEAST(1, 3, 0)
 #if defined(__MACOSX__)

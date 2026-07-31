@@ -2425,7 +2425,7 @@ void RecalculateDrawnSubsectors(void)
     }
   }
 
-  gld_ResetTexturedAutomap();
+  // gld_ResetTexturedAutomap();
 }
 
 void G_AfterLoad(void)

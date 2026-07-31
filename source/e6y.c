@@ -44,7 +44,7 @@
 #include <direct.h>
 #include <winreg.h>
 #endif
-#include <SDL2/SDL_opengl.h>
+#include <SDL/SDL_opengl.h>
 #include <string.h>
 #include <math.h>
 
@@ -52,7 +52,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 #ifdef _WIN32
 #include <SDL_syswm.h>
 #endif
@@ -81,8 +81,8 @@
 #include "am_map.h"
 #include "dsda.h"
 #include "dsda/settings.h"
-#include "gl_struct.h"
-#include "gl_intern.h"
+// #include "gl_struct.h"
+// #include "gl_intern.h"
 #include "g_game.h"
 #include "d_deh.h"
 #include "e6y.h"
@@ -107,7 +107,6 @@ int demo_tics_count;
 char demo_len_st[80];
 
 int mouse_handler;
-int gl_render_fov = 90;
 
 camera_t walkcamera;
 
@@ -285,13 +284,6 @@ void M_ChangeSkyMode(void)
   viewpitch = 0;
 
   R_InitSkyMap();
-
-  gl_skymode = dsda_IntConfig(dsda_config_gl_skymode);
-
-  if (gl_skymode == skytype_auto)
-    gl_drawskys = (dsda_FreeAim() ? skytype_skydome : skytype_standard);
-  else
-    gl_drawskys = gl_skymode;
 }
 
 static const int upViewPitchLimit = -ANG90 + (1 << ANGLETOFINESHIFT);

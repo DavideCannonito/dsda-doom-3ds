@@ -39,7 +39,7 @@
 
 #include <math.h>
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 #include "doomstat.h"
 #include "p_spec.h"
@@ -699,14 +699,6 @@ void R_StoreWallRange(const int start, const int stop)
   if(curline->linedef)
     curline->linedef->flags |= ML_MAPPED;
 
-  if (V_IsOpenGLMode())
-  {
-    // proff 11/99: the rest of the calculations is not needed for OpenGL
-    ds_p++->curline = curline;
-    gld_AddWall(curline);
-
-    return;
-  }
 
 #ifdef RANGECHECK
   if (start >=viewwidth || start > stop)
