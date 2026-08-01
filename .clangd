@@ -19,7 +19,7 @@ CompileFlags:
     -DHAVE_CONFIG_H,
     -D_GNU_SOURCE,
   ]
-  Remove: [-mword-relocations]
+  Remove: [-mword-relocations, -fipa-pta, -fipa-icf, -ftree-loop-vectorize]
   BuiltinHeaders: QueryDriver
   Compiler: /opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc
 

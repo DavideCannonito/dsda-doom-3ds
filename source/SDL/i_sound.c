@@ -1043,7 +1043,7 @@ static const music_player_t *music_players[] =
   &fl_player, // flplayer.h
   &opl_synth_player, // oplplayer.h
   &pm_player, // portmidiplayer.h
-  &sdl_mixer_player,
+  &sdl_mixer_player, // sdlmixerplayer.h
   NULL
 };
 #define NUM_MUS_PLAYERS ((int)(sizeof (music_players) / sizeof (music_player_t *) - 1))
