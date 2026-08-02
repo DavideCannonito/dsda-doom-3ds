@@ -1,4 +1,5 @@
 #include "MUSIC/sdlmixerplayer.h"
+#include "lprintf.h"
 #include "musicplayer.h"
 #include <SDL/SDL_mixer.h>
 
@@ -37,6 +38,8 @@ void sm_setvolume(int v) {
 
   // Mix_VolumeMusic has a range from 0-128, whereas dsda-doom has 0-15.
   Mix_VolumeMusic(converted_vol);
+  lprintf(LO_DEBUG, "sm_setvolume: Current set volume: %i\n",
+          Mix_VolumeMusic(-1));
 }
 
 // pause currently running song.
@@ -56,6 +59,12 @@ const void *sm_registersong(const void *data, unsigned len) {
   player_state.outbuf_len = len;
   player_state.music_handle = Mix_LoadMUS_RW(music);
 
+  if (player_state.music_handle) {
+    lprintf(LO_INFO, "sm_registersong: Music successfully registered\n");
+  } else {
+    lprintf(LO_WARN, "sm_registersong: Music UNSUCCESSFULLY registered\n");
+  }
+
   return player_state.music_handle;
 }
 
@@ -70,7 +79,11 @@ void sm_unregistersong(const void *handle) {
 }
 
 void sm_play(const void *handle, int looping) {
-  Mix_PlayMusic(player_state.music_handle, looping?-1:0);
+  if (Mix_PlayMusic(player_state.music_handle, looping ? -1 : 0) < 0) {
+    lprintf(LO_ERROR, "sm_play: Mix_PlayMusic failed\n");
+  }
+  lprintf(LO_DEBUG, "sm_play: Is music playing? %i\n", Mix_PlayingMusic());
+  lprintf(LO_DEBUG, "sm_play: Is music paused? %i\n", Mix_PausedMusic());
 }
 
 // stop
